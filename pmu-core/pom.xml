@@ -7,4 +7,24 @@
   </parent>
   <artifactId>pmu-core</artifactId>
   <name>PMU Tutorial Core</name>
+  <dependencies>
+  	<dependency>
+  		<groupId>junit</groupId>
+  		<artifactId>junit</artifactId>
+  	</dependency>
+  	<dependency>
+  		<groupId>org.easymock</groupId>
+  		<artifactId>easymock</artifactId>
+  	</dependency>
+  	<dependency>
+  		<groupId>org.apache.felix</groupId>
+  		<artifactId>org.apache.felix.ipojo.annotations</artifactId>
+  	</dependency>
+  	<dependency>
+		<groupId>pnnl.goss</groupId>
+		<artifactId>goss-core-client</artifactId>
+		<version>0.1.3-SNAPSHOT</version>
+		<type>jar</type>
+	</dependency>
+  </dependencies>
 </project>
