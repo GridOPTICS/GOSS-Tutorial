@@ -5,7 +5,7 @@
     <artifactId>pmu-feature</artifactId>
     <version>0.0.1-SNAPSHOT</version>
   </parent>
-  <artifactId>pmu-core</artifactId>
+  <artifactId>tutorial-pmu-core</artifactId>
   <name>PMU Tutorial Core</name>
   <dependencies>
   	<dependency>
