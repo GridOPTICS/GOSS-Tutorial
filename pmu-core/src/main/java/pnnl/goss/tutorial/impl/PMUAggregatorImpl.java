@@ -1,33 +1,73 @@
 package pnnl.goss.tutorial.impl;
 
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.HashMap;
+
+import javax.xml.crypto.Data;
+
 import org.apache.felix.ipojo.annotations.Property;
 
-import pnnl.goss.tutorial.PMUAggregator;
+import pnnl.goss.core.DataResponse;
 import pnnl.goss.core.Response;
 import pnnl.goss.core.client.Client;
 import pnnl.goss.core.client.GossResponseEvent;
+import pnnl.goss.tutorial.PMUAggregator;
 
 public class PMUAggregatorImpl implements PMUAggregator{
 
 	
 	final Client client;
+	final SimpleDateFormat fmt = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 	private String pmu1Topic;
 	private String pmu2Topic;
 	private String outputTopic;
+	
 	
 	
 	public PMUAggregatorImpl(@Property Client client){
 		this.client = client;
 	}
 	
+	private void publishDifference(Date date, Double value1, Double value2){
+		String value = fmt.format(date);
+		value += ","+ (value1-value2);
+		DataResponse response = new DataResponse();
+		response.setData(value);
+		client.publish(outputTopic, value);
+	}
+	
 	public void startCalculatePhaseAngleDifference(String topic1, String topic2, String outputTopic) {
+		pmu1Topic = topic1;
+		pmu2Topic = topic2;
+		this.outputTopic = outputTopic;
+		final HashMap<Date, Double> topic1Values = new HashMap<Date, Double>();
+		final HashMap<Date, Double> topic2Values = new HashMap<Date, Double>();
+		
 		client.subscribeTo(topic1, new GossResponseEvent() {
 			
 			@Override
 			public void onMessage(Response response) {
-				// TODO Auto-generated method stub
+				String value = (String)((DataResponse)response).getData();
+				String args[] = value.split(",");
+				Date date = null;
+				Double dblValue = null;
+				try {
+					date = fmt.parse(args[0]);
+					dblValue = Double.parseDouble(args[1]);					
+					topic1Values.put(date, dblValue);
+				} catch (ParseException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 				
+				if (date != null && topic2Values.containsKey(date)){
+					publishDifference(date, dblValue, topic2Values.get(date));
+					topic1Values.remove(date);
+					topic2Values.remove(date);
+				}
 			}
 		});
 		
@@ -35,7 +75,24 @@ public class PMUAggregatorImpl implements PMUAggregator{
 			
 			@Override
 			public void onMessage(Response response) {
-				// TODO Auto-generated method stub
+				String value = (String)((DataResponse)response).getData();
+				String args[] = value.split(",");
+				Date date = null;
+				Double dblValue = null;
+				try {
+					date = fmt.parse(args[0]);
+					dblValue = Double.parseDouble(args[1]);					
+					topic2Values.put(date, dblValue);
+				} catch (ParseException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				
+				if (date != null && topic1Values.containsKey(date)){
+					publishDifference(date, topic1Values.get(date), dblValue);
+					topic1Values.remove(date);
+					topic2Values.remove(date);
+				}
 				
 			}
 		});

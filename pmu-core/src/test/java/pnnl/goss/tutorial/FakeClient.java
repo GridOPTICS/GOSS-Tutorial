@@ -6,6 +6,7 @@ import javax.jms.IllegalStateException;
 import javax.jms.JMSException;
 
 import pnnl.goss.core.Data;
+import pnnl.goss.core.DataResponse;
 import pnnl.goss.core.Request;
 import pnnl.goss.core.Request.RESPONSE_FORMAT;
 import pnnl.goss.core.client.Client;
@@ -18,6 +19,8 @@ public class FakeClient implements Client {
 	// Handles the subscribing of an event.
 	HashMap<String, GossResponseEvent> topicEvent = new HashMap<String, GossResponseEvent>();
 
+	
+	
 	public boolean isSubscribed(String topic){
 		return topicEvent.containsKey(topic);
 	}
@@ -62,8 +65,12 @@ public class FakeClient implements Client {
 	@Override
 	public void publish(String topicName, String data)
 			throws NullPointerException {
-		// TODO Auto-generated method stub
-
+		pubSubResponeCache.put(topicName, data);
+		if (isSubscribed(topicName)){
+			DataResponse response = new DataResponse();
+			response.setData(data);
+			topicEvent.get(topicName).onMessage(response);
+		}
 	}
 
 	@Override
