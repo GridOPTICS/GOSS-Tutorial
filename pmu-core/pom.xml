@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>pnnl.goss.tutorial</groupId>
-    <artifactId>pmu-feature</artifactId>
+    <artifactId>tutorial-pmu-feature</artifactId>
     <version>0.0.1-SNAPSHOT</version>
   </parent>
   <artifactId>tutorial-pmu-core</artifactId>
