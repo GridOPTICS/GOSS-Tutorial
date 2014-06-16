@@ -14,5 +14,15 @@ public interface PMUAggregator {
 	 */
 	public void startCalculatePhaseAngleDifference(String topic1, String topic2, String outputTopic);
 	
-	
+	public String getPmu1Topic();
+
+	public void setPmu1Topic(String pmu1Topic);
+
+	public String getPmu2Topic();
+
+	public void setPmu2Topic(String pmu2Topic);
+
+	public String getOutputTopic();
+
+	public void setOutputTopic(String outputTopic);
 }
