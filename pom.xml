@@ -7,9 +7,9 @@
 	<name>PMU tutorial feature</name>
 	<packaging>pom</packaging>
 	<modules>
-		<module>tutorial-pmu-core</module>
-		<module>tutorial-pmu-web-ui</module>
-		<module>tutorial-pmu-java-ui</module>
+		<module>pmu-core</module>
+		<module>pmu-web-ui</module>
+		<module>pmu-java-ui</module>
 	</modules>
 
 
