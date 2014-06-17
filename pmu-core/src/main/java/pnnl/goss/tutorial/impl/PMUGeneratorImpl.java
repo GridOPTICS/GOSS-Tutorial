@@ -2,7 +2,9 @@ package pnnl.goss.tutorial.impl;
 
 import java.io.File;
 import java.util.List;
+import java.util.Queue;
 import java.util.Stack;
+import java.util.concurrent.LinkedBlockingDeque;
 
 import org.apache.felix.ipojo.annotations.Property;
 
@@ -12,7 +14,7 @@ import pnnl.goss.tutorial.PMUGenerator;
 public class PMUGeneratorImpl implements PMUGenerator{
 	
 	private final Client client;
-	private Stack<String> data;
+	private Queue<String> data;
 	private String outputTopic;
 	
 	private boolean isRunning = false;
@@ -22,12 +24,12 @@ public class PMUGeneratorImpl implements PMUGenerator{
 		
 	public PMUGeneratorImpl(@Property Client client, List<String> data){
 		this.client = client;
-		this.data = new Stack<String>();
+		this.data = new LinkedBlockingDeque<String>();
 		this.data.addAll(data);
 	}
 	
 	private void publishNext(){
-		String item = data.pop();		
+		String item = data.poll();		
 		this.client.publish(outputTopic, item);		
 	}
 	
@@ -52,7 +54,7 @@ public class PMUGeneratorImpl implements PMUGenerator{
 			public void run(){
 				
 				while(isRunning){
-					for(int i=0;i<itemsPerIterval && !data.empty(); i++){
+					for(int i=0;i<itemsPerIterval && !data.isEmpty(); i++){
 						publishNext();
 					}
 					

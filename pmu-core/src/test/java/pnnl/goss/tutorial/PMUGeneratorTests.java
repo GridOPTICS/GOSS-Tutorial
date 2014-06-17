@@ -39,8 +39,9 @@ public class PMUGeneratorTests {
 		FakeClient client = new FakeClient();
 		String pmuId = "PMU_1";
 		String pmuTopic = "/pmu/"+pmuId;
-				
-				
+		int itemsPerInterval = 2;
+		double intervalSeconds = 1;
+								
 		String[] data = {
 			"30.5,20.5,80.5",
 			"20.5,20.5,10.5",
@@ -49,32 +50,48 @@ public class PMUGeneratorTests {
 			"80.5,40.5,50.5"
 		};
 		
-		FakeResponseEvent evnt = new FakeResponseEvent();
-		
+		FakeResponseEvent evnt = new FakeResponseEvent();		
 		
 		
 		client.subscribeTo(pmuTopic, evnt);
 		
+		assertTrue(client.isSubscribed(pmuTopic));
+		
 		PMUGeneratorImpl gen = new PMUGeneratorImpl(client, Arrays.asList(data));
 						
-		gen.start(pmuId,  pmuTopic, 2, 5);
+		gen.start(pmuId,  pmuTopic, itemsPerInterval, intervalSeconds);
 		
 		long start = new Date().getTime();
 		long offset = 0;
-		while(evnt.getNumberItems() < data.length && offset < 1500){
-			String item = evnt.getLastReturned();
-			if (item != null){
-				assertEquals(data[evnt.getNumberItems()], item);
-			
-				offset = new Date().getTime() - start;
-			}
+
+		while(evnt.getNumberItems() < data.length && offset < data.length*intervalSeconds*1000){
+			offset = new Date().getTime() - start;
 		}
 		
+//		System.out.println("GOT ALL "+evnt.getNumberItems());
+		
 		assertEquals(evnt.getNumberItems(), data.length);
+		
+		List<Long> arrivals = evnt.getArrivalTimes();
+		for(int i=0;i<data.length; i++){
+			if (i < data.length - 1){
+				assertTrue(arrivals.get(i)<= arrivals.get(i+1));
+			}
+			
+			if (i < data.length - itemsPerInterval){
+				assertTrue((arrivals.get(i+itemsPerInterval)- arrivals.get(i)) >= intervalSeconds*1000);
+			}
+			
+			assertEquals(data[i], evnt.getItemsReturned().get(i));			
+		}
+		//TODO check total time
+		//long totalRun = arrivals.get(arrivals.size()-1) - arrivals.get(0);
+		//eh
+		
 	}
 	
 	class FakeResponseEvent implements GossResponseEvent{
-		
+		private ArrayList<Long> arrivalTimes = new ArrayList<Long>();
 		private ArrayList<String> items = new ArrayList<String>();
 		private String lastItem;
 		public String getLastReturned(){
@@ -87,11 +104,16 @@ public class PMUGeneratorTests {
 		public List<String> getItemsReturned(){
 			return items;
 		}
+		
+		public List<Long> getArrivalTimes(){
+			return arrivalTimes;
+		}
 
 		@Override
 		public void onMessage(Response response) {
 			lastItem = (String)((DataResponse)response).getData();
 			items.add(lastItem);			
+			arrivalTimes.add(new Date().getTime());
 		}
 		
 	}
