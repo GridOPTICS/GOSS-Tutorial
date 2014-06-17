@@ -88,34 +88,5 @@ public class PMUGeneratorTests {
 		//long totalRun = arrivals.get(arrivals.size()-1) - arrivals.get(0);
 		//eh
 		
-	}
-	
-	class FakeResponseEvent implements GossResponseEvent{
-		private ArrayList<Long> arrivalTimes = new ArrayList<Long>();
-		private ArrayList<String> items = new ArrayList<String>();
-		private String lastItem;
-		public String getLastReturned(){
-			return lastItem;
-		}
-		public int getNumberItems(){
-			return items.size();
-		}
-		
-		public List<String> getItemsReturned(){
-			return items;
-		}
-		
-		public List<Long> getArrivalTimes(){
-			return arrivalTimes;
-		}
-
-		@Override
-		public void onMessage(Response response) {
-			lastItem = (String)((DataResponse)response).getData();
-			items.add(lastItem);			
-			arrivalTimes.add(new Date().getTime());
-		}
-		
-	}
-	
+	}	
 }
