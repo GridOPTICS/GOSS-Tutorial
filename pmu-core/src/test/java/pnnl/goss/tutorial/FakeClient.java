@@ -1,5 +1,6 @@
 package pnnl.goss.tutorial;
 
+import java.io.Serializable;
 import java.util.HashMap;
 
 import javax.jms.IllegalStateException;
@@ -15,7 +16,7 @@ import pnnl.goss.core.client.GossResponseEvent;
 public class FakeClient implements Client {
 
 	// Handlings passing data from/to topic
-	HashMap<String, String> pubSubResponeCache = new HashMap<String,String>();
+	HashMap<String, Serializable> pubSubResponeCache = new HashMap<String,Serializable>();
 	// Handles the subscribing of an event.
 	HashMap<String, GossResponseEvent> topicEvent = new HashMap<String, GossResponseEvent>();
 
@@ -55,10 +56,13 @@ public class FakeClient implements Client {
 	}
 
 	@Override
-	public void publish(String topicName, Data data,
+	public void publish(String topicName, Serializable data,
 			RESPONSE_FORMAT responseFormat) throws NullPointerException {
 		
-				
+		pubSubResponeCache.put(topicName, data);
+		if (isSubscribed(topicName)){
+			topicEvent.get(topicName).onMessage(data);
+		}
 
 	}
 
@@ -67,9 +71,7 @@ public class FakeClient implements Client {
 			throws NullPointerException {
 		pubSubResponeCache.put(topicName, data);
 		if (isSubscribed(topicName)){
-			DataResponse response = new DataResponse();
-			response.setData(data);
-			topicEvent.get(topicName).onMessage(response);
+			topicEvent.get(topicName).onMessage(data);
 		}
 	}
 

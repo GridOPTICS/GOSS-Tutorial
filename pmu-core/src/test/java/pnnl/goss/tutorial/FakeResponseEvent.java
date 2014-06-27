@@ -1,5 +1,6 @@
 package pnnl.goss.tutorial;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -28,7 +29,7 @@ class FakeResponseEvent implements GossResponseEvent{
 	}
 
 	@Override
-	public void onMessage(Response response) {
+	public void onMessage(Serializable response) {
 		lastItem = (String)((DataResponse)response).getData();
 		items.add(lastItem);			
 		arrivalTimes.add(new Date().getTime());

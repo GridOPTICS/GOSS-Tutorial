@@ -43,6 +43,7 @@ public class PMUGeneratorTests {
 		double intervalSeconds = 1;
 								
 		String[] data = {
+			//"phase, angle, freq"
 			"30.5,20.5,80.5",
 			"20.5,20.5,10.5",
 			"40.5,9.5,7.5",
