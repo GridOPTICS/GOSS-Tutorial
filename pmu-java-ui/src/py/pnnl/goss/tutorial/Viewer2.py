@@ -15,15 +15,21 @@ from matplotlib.figure import Figure
 import tkinter as Tk
 
 import stomp
+import json
 
+
+
+agg_topic = '/topic//pmu/PMU_1/PMU_2/padiff'
 
 class StompListener(object):
     def on_error(self, headers, message):
         print('received an error %s' % message)
     def on_message(self, headers, message):
-        print('received a message %s' % message)
-
-
+        topic = headers.pop("destination", "")
+        if(topic==agg_topic):
+            print('received a message on aggregate topic %s ' % message)
+        else:
+            print('received a message on another topic %s ' % topic)
 
 root = Tk.Tk()
 root.wm_title("GOSS tutorial Client")
@@ -69,7 +75,7 @@ buttonFrame.pack( side = Tk.TOP)
 #button = Tk.Button(master=root, text='Quit', command=_quit)
 #button.pack(side=Tk.BOTTOM)
 
-
+conn = None
 def _monitor():
     if monitorbutton.config('text')[-1] == 'Start Monitoring':
         monitorbutton.config(text='Stop Monitoring')
@@ -78,12 +84,15 @@ def _monitor():
         graphbutton.grid(row=2, column=0)
         
         #start connection
-        #topic = "/pmu/PMU_1/PMU_2/padiff"
+        
         conn = stomp.Connection([('localhost',61620)])
         conn.set_listener('', StompListener())
         conn.start()
         conn.connect('pmu_user', 'password')
-        conn.subscribe(destination='/pmu/PMU_1/PMU_2/padiff"', id=1, ack='auto')
+        conn.subscribe(destination=agg_topic, id=1, ack='auto')
+        
+        #conn.subscribe(destination='/topic//pmu/PMU_1', id=1, ack='auto')
+        
     else:
         monitorbutton.config(text='Start Monitoring')
         #stop the monitoring
@@ -91,7 +100,8 @@ def _monitor():
         graphbutton.grid_forget();
         canvas._tkcanvas.pack_forget()
         print('Stop Monitoring')    
-        conn.disconnect()
+        if(conn!=None):
+            conn.disconnect()
                         
 
 monitorbutton = Tk.Button(master=buttonFrame, text='Start Monitoring', command=_monitor)
