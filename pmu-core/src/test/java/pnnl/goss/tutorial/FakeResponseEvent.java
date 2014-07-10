@@ -29,7 +29,7 @@ class FakeResponseEvent implements GossResponseEvent{
 	}
 
 	@Override
-	public void onMessage(Serializable response) {
+	public void onMessage(Response response) {
 		lastItem = (String)((DataResponse)response).getData();
 		items.add(lastItem);			
 		arrivalTimes.add(new Date().getTime());

@@ -10,12 +10,16 @@ import java.util.HashMap;
 
 import org.apache.felix.ipojo.annotations.Property;
 
+import com.google.gson.Gson;
+
+import pnnl.goss.core.Data;
 import pnnl.goss.core.DataResponse;
 import pnnl.goss.core.Request.RESPONSE_FORMAT;
 import pnnl.goss.core.Response;
 import pnnl.goss.core.client.Client;
 import pnnl.goss.core.client.GossResponseEvent;
 import pnnl.goss.tutorial.PMUAggregator;
+import pnnl.goss.tutorial.datamodel.PMUPhaseAngleDiffData;
 
 public class PMUAggregatorImpl implements PMUAggregator{
 
@@ -35,13 +39,22 @@ public class PMUAggregatorImpl implements PMUAggregator{
 	private void publishDifference(Date date, Double value1, Double value2){
 		String timestamp = fmt.format(date);
 		Double value = value1-value2;
-		HashMap<String, String> map = new HashMap<String, String>();
-		map.put(pmu1Topic, value1.toString());
-		map.put(pmu2Topic, value2.toString());
-		map.put(outputTopic, value.toString());
-		map.put("timestamp", timestamp);
+//		HashMap<String, String> map = new HashMap<String, String>();
+//		map.put(pmu1Topic, value1.toString());
+//		map.put(pmu2Topic, value2.toString());
+//		map.put(outputTopic, value.toString());
+//		map.put("timestamp", timestamp);
 		
-		client.publish(outputTopic, map, RESPONSE_FORMAT.JSON);
+		PMUPhaseAngleDiffData data = new PMUPhaseAngleDiffData();
+		data.setPhasor1(value1);
+		data.setPhasor2(value2);
+		data.setDifference(value);
+		data.setTimestamp(date);
+		Gson gson = new Gson();
+		String json = gson.toJson(data);
+		
+		client.publish(outputTopic, json);
+//		client.publish(outputTopic, map, RESPONSE_FORMAT.JSON);
 	}
 	
 	public void startCalculatePhaseAngleDifference(String topic1, String topic2, String outputTopic) {
@@ -53,7 +66,7 @@ public class PMUAggregatorImpl implements PMUAggregator{
 		client.subscribeTo(topic1, new GossResponseEvent() {
 			
 			@Override
-			public void onMessage(Serializable response) {
+			public void onMessage(Response response) {
 				
 				System.out.println(response);
 				String args[] = response.toString().split(",");
@@ -79,7 +92,7 @@ public class PMUAggregatorImpl implements PMUAggregator{
 		client.subscribeTo(topic2, new GossResponseEvent() {
 			
 			@Override
-			public void onMessage(Serializable response) {
+			public void onMessage(Response response) {
 				String args[] = response.toString().split(",");
 				Date date = null;
 				Double dblValue = null;

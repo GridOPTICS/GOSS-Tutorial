@@ -10,6 +10,7 @@ import pnnl.goss.core.Data;
 import pnnl.goss.core.DataResponse;
 import pnnl.goss.core.Request;
 import pnnl.goss.core.Request.RESPONSE_FORMAT;
+import pnnl.goss.core.Response;
 import pnnl.goss.core.client.Client;
 import pnnl.goss.core.client.GossResponseEvent;
 
@@ -55,23 +56,23 @@ public class FakeClient implements Client {
 
 	}
 
-	@Override
-	public void publish(String topicName, Serializable data,
-			RESPONSE_FORMAT responseFormat) throws NullPointerException {
-		
-		pubSubResponeCache.put(topicName, data);
-		if (isSubscribed(topicName)){
-			topicEvent.get(topicName).onMessage(data);
-		}
-
-	}
+//	@Override
+//	public void publish(String topicName, Serializable data,
+//			RESPONSE_FORMAT responseFormat) throws NullPointerException {
+//		
+//		pubSubResponeCache.put(topicName, data);
+//		if (isSubscribed(topicName)){
+//			topicEvent.get(topicName).onMessage(data);
+//		}
+//
+//	}
 
 	@Override
 	public void publish(String topicName, String data)
 			throws NullPointerException {
 		pubSubResponeCache.put(topicName, data);
 		if (isSubscribed(topicName)){
-			topicEvent.get(topicName).onMessage(data);
+			topicEvent.get(topicName).onMessage(new DataResponse(data));
 		}
 	}
 
@@ -79,6 +80,17 @@ public class FakeClient implements Client {
 	public void close() {
 		// TODO Auto-generated method stub
 
+	}
+
+	@Override
+	public void publish(String topicName, Data data,
+			RESPONSE_FORMAT responseFormat) throws NullPointerException {
+		pubSubResponeCache.put(topicName, data);
+		if (isSubscribed(topicName)){
+			
+			topicEvent.get(topicName).onMessage(new DataResponse(data));
+		}
+		
 	}
 
 }

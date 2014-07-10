@@ -63,7 +63,7 @@ public class PMUAggregatorTests {
 		fakeClient.subscribeTo(outputTopic, new GossResponseEvent() {			
 						
 			@Override
-			public void onMessage(Serializable response) {
+			public void onMessage(Response response) {
 				
 				System.out.println(response);
 				//String args[] = value.split(",");
