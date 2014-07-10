@@ -25,7 +25,7 @@ public class PMUAggregatorImpl implements PMUAggregator{
 
 	
 	final Client client;
-	final SimpleDateFormat fmt = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+	final SimpleDateFormat fmt = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
 	private String pmu1Topic;
 	private String pmu2Topic;
 	private String outputTopic;
