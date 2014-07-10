@@ -1,8 +1,11 @@
 package pnnl.goss.tutorial.datamodel;
 
+import java.io.Serializable;
 import java.util.Date;
 
-public class PMUPhaseAngleDiffData {
+public class PMUPhaseAngleDiffData implements Serializable {
+	
+	private static final long serialVersionUID = 3219362975964656381L;
 	private Date timestamp;
 	private Double phasor1;
 	private Double phasor2;
