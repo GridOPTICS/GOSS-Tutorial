@@ -21,8 +21,8 @@ public class GeneratorLauncher {
 		Client client = new GossClient(new UsernamePasswordCredentials("pmu_user", "password"));
 		String pmu1Id = "PMU_1";
 		String pmu2Id = "PMU_2";
-		String pmu1Topic = "/pmu/"+pmu1Id;
-		String pmu2Topic = "/pmu/"+pmu2Id;
+		String pmu1Topic = "goss/tutorial/pmu1";
+		String pmu2Topic = "goss/tutorial/pmu2";
 		int itemsPerInterval = 2;
 		double intervalSeconds = 1;
 		
