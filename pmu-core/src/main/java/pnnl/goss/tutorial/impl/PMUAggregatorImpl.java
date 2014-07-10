@@ -1,20 +1,17 @@
 package pnnl.goss.tutorial.impl;
 
 
-import java.io.Serializable;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Dictionary;
 import java.util.HashMap;
 
 import org.apache.felix.ipojo.annotations.Property;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
-import pnnl.goss.core.Data;
 import pnnl.goss.core.DataResponse;
-import pnnl.goss.core.Request.RESPONSE_FORMAT;
 import pnnl.goss.core.Response;
 import pnnl.goss.core.client.Client;
 import pnnl.goss.core.client.GossResponseEvent;
@@ -50,9 +47,10 @@ public class PMUAggregatorImpl implements PMUAggregator{
 		data.setPhasor2(value2);
 		data.setDifference(value);
 		data.setTimestamp(date);
-		Gson gson = new Gson();
-		String json = gson.toJson(data);
+		Gson gson = new GsonBuilder().setDateFormat(fmt.toPattern()).create();
 		
+		String json = gson.toJson(data);
+		System.out.println("Publishing "+json+" to "+outputTopic);
 		client.publish(outputTopic, json);
 //		client.publish(outputTopic, map, RESPONSE_FORMAT.JSON);
 	}
@@ -67,17 +65,17 @@ public class PMUAggregatorImpl implements PMUAggregator{
 			
 			@Override
 			public void onMessage(Response response) {
-				
-				System.out.println(response);
-				String args[] = response.toString().split(",");
+				String responseStr = ((DataResponse)response).getData().toString();
+				String args[] = responseStr.split(",");
 				Date date = null;
 				Double dblValue = null;
 				try {
 					date = fmt.parse(args[0]);
-					dblValue = Double.parseDouble(args[1]);					
+					dblValue = Double.parseDouble(args[2]);					
 					topic1Values.put(date, dblValue);
 				} catch (ParseException e) {
 					// TODO Auto-generated catch block
+					System.err.println("Could not parse date "+args[0]);
 					e.printStackTrace();
 				}
 				
@@ -93,7 +91,8 @@ public class PMUAggregatorImpl implements PMUAggregator{
 			
 			@Override
 			public void onMessage(Response response) {
-				String args[] = response.toString().split(",");
+				String responseStr = ((DataResponse)response).getData().toString();
+				String args[] = responseStr.split(",");
 				Date date = null;
 				Double dblValue = null;
 				try {
@@ -102,6 +101,7 @@ public class PMUAggregatorImpl implements PMUAggregator{
 					topic2Values.put(date, dblValue);
 				} catch (ParseException e) {
 					// TODO Auto-generated catch block
+					System.err.println("Could not parse date "+args[0]);
 					e.printStackTrace();
 				}
 				
