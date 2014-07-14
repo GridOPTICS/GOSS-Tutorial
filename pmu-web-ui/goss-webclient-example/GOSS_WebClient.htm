@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html style="margin-left:100px;margin-right:100px;padding:10px" >
+<head>
+	<title>GOSS | Tutorial</title>
+    <link rel="stylesheet" href="css/foundation.css" />
+    <script src="js/vendor/modernizr.js"></script>
+	<script src="js/stomp.js"></script>
+	<script type="text/javascript">
+	var client = Stomp.client( "ws://WE22743.pnl.gov:61614");
+	client.connect( "pmu_user", "password",
+		function() {
+			client.subscribe("/topic/goss/tutorial/pmu/PMU_1",
+				function( message ) {
+					pmu1TextArea = document.getElementById("pmu1TextArea");
+					value = pmu1TextArea.innerHTML
+					value = message.body + '\n' + value
+					pmu1TextArea.innerHTML = value
+				}
+			);
+			client.subscribe("/topic/goss/tutorial/pmu/PMU_2",
+				function( message ) {
+					pmu2TextArea = document.getElementById("pmu2TextArea");
+					value = pmu2TextArea.innerHTML
+					value = message.body + '\n' + value
+					pmu2TextArea.innerHTML = value
+				}
+			);
+			client.subscribe("/topic/pmu/PMU_1/PMU_2/agg",
+				function( message ) {
+					aggTextArea = document.getElementById("aggTextArea");
+					value = aggTextArea.innerHTML
+					value = message.body + '\n' + value
+					aggTextArea.innerHTML = value
+				}
+			);
+		}
+	);
+
+	function sendControlMessage(message) {
+		client.send('/topic/goss/tutorial/control', {}, message)
+	}
+	
+</script>
+</head>
+<body>
+	
+	<center>
+		<h1>GridOPTICS Tutorial Workshop</h1>
+		<h2>GOSS: Web client Example</h2>
+	</center>
+	
+	<nav class="row">
+		<div class="large-12 columns">
+			<ul class="button-group radius even-4">
+				<li><a class="button" onclick="sendControlMessage('start pmu')">Start PMU Stream </a></li>
+				<li><a class="button" onclick="sendControlMessage('stop pmu')">Stop PMU Stream</a></li>
+				<li><a class="button" onclick="sendControlMessage('start agg')">Start Aggregator</a></li>
+				<li><a class="button" onclick="sendControlMessage('stop agg')">Stop Aggregator</a></li>
+			</ul>
+		</div>
+	</nav>  
+
+	<div class="row">
+		<div class="large-4 columns">
+			<label>PMU 1 Phasor 1 Stream</label>
+			<textarea readonly id="pmu1TextArea" rows="20"> </textarea>
+		</div>
+		
+		<div class="large-4 columns">
+			<label>PMU 2 Phasor 1 Stream</label>
+			<textarea readonly id="pmu2TextArea" rows="20"></textarea>
+		</div>
+		
+		<div class="large-4 columns">
+			<label>Phase Difference:</label>
+			<textarea readonly id="aggTextArea" rows="20"></textarea>
+		</div>
+		
+	</div>  
+
+</body>
+</html>
