@@ -7,6 +7,7 @@ import java.util.Date;
 import java.util.HashMap;
 
 import org.apache.felix.ipojo.annotations.Property;
+import org.apache.http.auth.UsernamePasswordCredentials;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -14,7 +15,9 @@ import com.google.gson.GsonBuilder;
 import pnnl.goss.core.DataResponse;
 import pnnl.goss.core.Response;
 import pnnl.goss.core.client.Client;
+import pnnl.goss.core.client.GossClient;
 import pnnl.goss.core.client.GossResponseEvent;
+import pnnl.goss.core.client.GossClient.PROTOCOL;
 import pnnl.goss.tutorial.PMUAggregator;
 import pnnl.goss.tutorial.datamodel.PMUPhaseAngleDiffData;
 
@@ -26,6 +29,8 @@ public class PMUAggregatorImpl implements PMUAggregator{
 	private String pmu1Topic;
 	private String pmu2Topic;
 	private String outputTopic;
+	private static Client client1 = new GossClient(new UsernamePasswordCredentials("pmu_user", "password"),PROTOCOL.STOMP);
+	private static Client client2 = new GossClient(new UsernamePasswordCredentials("pmu_user", "password"),PROTOCOL.STOMP);
 	
 	
 	
@@ -61,61 +66,81 @@ public class PMUAggregatorImpl implements PMUAggregator{
 		this.outputTopic = outputTopic;
 		final HashMap<Date, Double> topic1Values = new HashMap<Date, Double>();
 		final HashMap<Date, Double> topic2Values = new HashMap<Date, Double>();
-		client.subscribeTo(topic1, new GossResponseEvent() {
-			
-			@Override
-			public void onMessage(Response response) {
-				String responseStr = ((DataResponse)response).getData().toString();
-				String args[] = responseStr.split(",");
-				Date date = null;
-				Double dblValue = null;
-				try {
-					date = fmt.parse(args[0]);
-					dblValue = Double.parseDouble(args[2]);					
-					topic1Values.put(date, dblValue);
-				} catch (ParseException e) {
-					// TODO Auto-generated catch block
-					System.err.println("Could not parse date "+args[0]);
-					e.printStackTrace();
-				}
-				
-				if (date != null && topic2Values.containsKey(date)){
-					publishDifference(date, dblValue, topic2Values.get(date));
-					topic1Values.remove(date);
-					topic2Values.remove(date);
-				}
-			}
-		});
 		
-		client.subscribeTo(topic2, new GossResponseEvent() {
+		
+		Thread thread1 = new Thread(new Runnable() {
 			
 			@Override
-			public void onMessage(Response response) {
-				String responseStr = ((DataResponse)response).getData().toString();
-				String args[] = responseStr.split(",");
-				Date date = null;
-				Double dblValue = null;
-				try {
-					date = fmt.parse(args[0]);
-					dblValue = Double.parseDouble(args[1]);					
-					topic2Values.put(date, dblValue);
-				} catch (ParseException e) {
-					// TODO Auto-generated catch block
-					System.err.println("Could not parse date "+args[0]);
-					e.printStackTrace();
-				}
-				
-				if (date != null && topic1Values.containsKey(date)){
-					publishDifference(date, topic1Values.get(date), dblValue);
-					topic1Values.remove(date);
-					topic2Values.remove(date);
-				}
+			public void run() {
+				// TODO Auto-generated method stub
+				GossResponseEvent event1  = new GossResponseEvent() {
+					
+					@Override
+					public void onMessage(Response response) {
+						String responseStr = ((DataResponse)response).getData().toString();
+						String args[] = responseStr.split(",");
+						Date date = null;
+						Double dblValue = null;
+						try {
+							date = fmt.parse(args[0]);
+							dblValue = Double.parseDouble(args[2]);					
+							topic1Values.put(date, dblValue);
+						} catch (ParseException e) {
+							// TODO Auto-generated catch block
+							System.err.println("Could not parse date "+args[0]);
+							e.printStackTrace();
+						}
+						
+						if (date != null && topic2Values.containsKey(date)){
+							publishDifference(date, dblValue, topic2Values.get(date));
+							topic1Values.remove(date);
+							topic2Values.remove(date);
+						}
+					}
+				};
+				client1.subscribeTo(pmu1Topic, event1);
 				
 			}
 		});
 		
+		Thread thread2 = new Thread(new Runnable() {
+			
+			@Override
+			public void run() {
+				GossResponseEvent event2 = new GossResponseEvent() {
+					
+					@Override
+					public void onMessage(Response response) {
+						String responseStr = ((DataResponse)response).getData().toString();
+						String args[] = responseStr.split(",");
+						Date date = null;
+						Double dblValue = null;
+						try {
+							date = fmt.parse(args[0]);
+							dblValue = Double.parseDouble(args[1]);					
+							topic2Values.put(date, dblValue);
+						} catch (ParseException e) {
+							// TODO Auto-generated catch block
+							System.err.println("Could not parse date "+args[0]);
+							e.printStackTrace();
+						}
+						
+						if (date != null && topic1Values.containsKey(date)){
+							publishDifference(date, topic1Values.get(date), dblValue);
+							topic1Values.remove(date);
+							topic2Values.remove(date);
+						}
+						
+					}
+				};
+				
+				client2.subscribeTo(pmu2Topic, event2);
+				
+			}
+		});
 		
-		// Subscribe to client.topic1, and topic2.
+		thread1.start();
+		thread2.start();
 		
 	}
 
