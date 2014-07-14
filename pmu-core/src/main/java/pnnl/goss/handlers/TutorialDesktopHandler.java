@@ -2,6 +2,7 @@ package pnnl.goss.handlers;
 
 import java.sql.Connection;
 import java.sql.Statement;
+import java.text.SimpleDateFormat;
 
 import pnnl.goss.core.Request;
 import pnnl.goss.core.UploadRequest;
@@ -18,18 +19,20 @@ public UploadResponse handle(Request request) {
 		
 		try{
 			UploadRequest uploadrequest = (UploadRequest)request;
-			
+			SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
 			Connection connection = GOSSTutorialDataSource.getInstance().getConnection();
 			System.out.println(connection);
 			Statement statement = connection.createStatement();
 			
-			PMUPhaseAngleDiffData data1 = (PMUPhaseAngleDiffData)uploadrequest.getData();
-			String queryString = "replace into aggregator(`timestamp`,pmu1Phasor,pmu2Phasor,Result) values "+
-									"('"+data1.getTimestamp()+"',"+data1.getPhasor1()+","+data1.getPhasor2()+","+data1.getDifference()+")";
+			PMUPhaseAngleDiffData data = (PMUPhaseAngleDiffData)uploadrequest.getData();
+			
+			String time = formatter.format(data.getTimestamp());
+			String queryString = "replace into aggregator(`time`,phasor1,phasor2,diff) values "+
+									"('"+time+"',"+data.getPhasor1()+","+data.getPhasor2()+","+data.getDifference()+")";
 			System.out.println(queryString);
 			int rows =  statement.executeUpdate(queryString);
 			System.out.println(rows);
-			connection.commit();
+			//connection.commit();
 			connection.close();
 		}
 		catch(Exception e){
