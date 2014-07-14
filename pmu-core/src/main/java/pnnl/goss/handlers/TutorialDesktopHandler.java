@@ -25,7 +25,7 @@ public UploadResponse handle(Request request) {
 			
 			PMUPhaseAngleDiffData data1 = (PMUPhaseAngleDiffData)uploadrequest.getData();
 			String queryString = "replace into aggregator(`timestamp`,pmu1Phasor,pmu2Phasor,Result) values "+
-									"('"+data1.getTimestamp()+"',"+data1.getPmu1Phasor()+","+data1.getPmu2Phasor()+","+data1.Result()+")";
+									"('"+data1.getTimestamp()+"',"+data1.getPhasor1()+","+data1.getPhasor2()+","+data1.getDifference()+")";
 			System.out.println(queryString);
 			int rows =  statement.executeUpdate(queryString);
 			System.out.println(rows);
