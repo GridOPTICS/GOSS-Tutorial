@@ -1,9 +1,18 @@
+import java.text.DecimalFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
+import java.util.Date;
+import java.util.Random;
 
 import org.apache.http.auth.UsernamePasswordCredentials;
 
+import pnnl.goss.core.DataResponse;
+import pnnl.goss.core.Response;
 import pnnl.goss.core.client.Client;
 import pnnl.goss.core.client.GossClient;
+import pnnl.goss.core.client.GossClient.PROTOCOL;
+import pnnl.goss.core.client.GossResponseEvent;
 import pnnl.goss.tutorial.PMUGenerator;
 import pnnl.goss.tutorial.impl.PMUGeneratorImpl;
 
@@ -11,47 +20,85 @@ import pnnl.goss.tutorial.impl.PMUGeneratorImpl;
 public class GeneratorLauncher {
 	private PMUGenerator generator1;
 	private PMUGenerator generator2;
-	
+	private static Client client = new GossClient(new UsernamePasswordCredentials("pmu_user", "password"),PROTOCOL.STOMP);
 	
 	public static void main(String[] args){
-		new GeneratorLauncher().launch();	
+		
+		final GeneratorLauncher launcher = new GeneratorLauncher();
+		GossResponseEvent event = new GossResponseEvent() {
+			public void onMessage(Response response) {
+				String message = (String)((DataResponse)response).getData(); 
+				if(message.contains("start pmu"))
+					launcher.launch();	
+			}
+		};
+		client.subscribeTo("/topic/goss/tutorial/control", event);
+		
+		
 	}
 	
 	protected void launch(){
-		Client client = new GossClient(new UsernamePasswordCredentials("pmu_user", "password"));
-		String pmu1Id = "PMU_1";
-		String pmu2Id = "PMU_2";
-		String pmu1Topic = "goss/tutorial/pmu1";
-		String pmu2Topic = "goss/tutorial/pmu2";
-		int itemsPerInterval = 2;
-		double intervalSeconds = 1;
 		
-		String[] dataArr1 = {
-				//"'yyyy-MM-dd HH:mm:ss.SSS', phase, angle, freq"
+		try{
+			String pmu1Id = "PMU_1";
+			String pmu2Id = "PMU_2";
+			String pmu1Topic = "goss/tutorial/pmu/PMU_1";
+			String pmu2Topic = "goss/tutorial/pmu/PMU_2";
+			int itemsPerInterval = 2;
+			double intervalSeconds = 1;
+			Random random = new Random();
+			double max = 1.0;
+			double min = 0.0;
+			Date datetime = null;
+			SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+			DecimalFormat decimalFormat = new DecimalFormat("#.##");
+			String phase;
+			String angle;
+			String freq;
+			int totalValues = 1000;
+			String dataArr1[] = new String[totalValues];
+			String dataArr2[] = new String[totalValues];
+			
+			///Create timestamp
+			for(int i=0;i<totalValues;i++){
 				
-				"2014-07-10 01:00:00.000,30.5,20.5,80.5",
-				"2014-07-10 01:00:00.033,20.5,20.5,10.5",
-				"2014-07-10 01:00:00.066,40.5,9.5,7.5",
-				"2014-07-10 01:00:00.099,70.5,780.5,50.5",
-				"2014-07-10 01:00:00.132,80.5,40.5,50.5"
-			};
+				if(datetime==null){
+					
+					datetime = formatter.parse("2014-07-10 01:00:00.000");
+					
+				}
+				else{
+					long milliseconds = 33;
+					datetime.setTime(datetime.getTime()+milliseconds);
+				}
+				
+				//Create data for PMU 1 Phasor 1 stream
+				phase = decimalFormat.format(min + (max - min) * random.nextDouble());
+				angle = decimalFormat.format(min + (max - min) * random.nextDouble());
+				freq = decimalFormat.format(min + (max - min) * random.nextDouble());
+			
+				dataArr1[i] = formatter.format(datetime)+","+phase+","+angle+","+freq;
+				
+				
+				//Create data for PMU 2 Phasor 1 stream
+				phase = decimalFormat.format(min + (max - min) * random.nextDouble());
+				angle = decimalFormat.format(min + (max - min) * random.nextDouble());
+				freq = decimalFormat.format(min + (max - min) * random.nextDouble());
+				dataArr2[i] = formatter.format(datetime)+","+phase+","+angle+","+freq;
+				
+			}
+			
+			generator1 = new PMUGeneratorImpl(client,  Arrays.asList(dataArr1));
+			generator1.start(pmu1Id, pmu1Topic, itemsPerInterval, intervalSeconds);
+			
+			generator2 = new PMUGeneratorImpl(client,  Arrays.asList(dataArr2));
+			generator2.start(pmu2Id, pmu2Topic, itemsPerInterval, intervalSeconds);
 		
-		
-		generator1 = new PMUGeneratorImpl(client,  Arrays.asList(dataArr1));
-		generator1.start(pmu1Id, pmu1Topic, itemsPerInterval, intervalSeconds);
-		
-		
-		String[] dataArr2 = {
-				//yyyy-MM-dd HH:mm:ss.SSS, "phase, angle, freq"
-				"2014-07-10 01:00:00.000,30.5,21.5,80.5",
-				"2014-07-10 01:00:00.033,20.5,19.8,10.5",
-				"2014-07-10 01:00:00.066,40.5,9.7,7.5",
-				"2014-07-10 01:00:00.099,70.5,780.0,50.5",
-				"2014-07-10 01:00:00.132,80.5,41.2,50.5"
-			};
-		
-		generator2 = new PMUGeneratorImpl(client,  Arrays.asList(dataArr2));
-		generator2.start(pmu2Id, pmu2Topic, itemsPerInterval, intervalSeconds);	
+		}
+		catch(ParseException pe){
+			System.out.println("PMU stream date is not in the correct format");
+			pe.printStackTrace();
+		}
 	}
 	
 	
