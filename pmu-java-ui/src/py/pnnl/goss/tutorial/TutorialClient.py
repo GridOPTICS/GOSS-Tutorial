@@ -4,8 +4,9 @@ import matplotlib
 from matplotlib.pyplot import plot
 matplotlib.use('TkAgg')
 
-import datetime
+import datetime, calendar, time
 from numpy import arange, sin, pi
+import numpy
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg #, NavigationToolbar2TkAgg
 
 
@@ -25,6 +26,14 @@ client = gateway.jvm.pnnl.goss.core.client.GossClient()
 agg_topic = '/topic/pmu/PMU_1/PMU_2/agg'
 username = 'pmu_user'
 pw = 'password'
+startDateStr = "2014-07-10 00:00:00.000"
+
+#values for the graph
+graphTimes = []
+phasorValues = []
+phasor2Values = []
+differences = []
+showGraph=False
 
 class StompListener(object):
     def on_error(self, headers, message):
@@ -48,6 +57,16 @@ class StompListener(object):
             newLabel = str(time)+", "+str(jdata['phasor1'])+", "+str(jdata['phasor1'])+", "+str(jdata['difference'])
             addedTextVar.set(newLabel)
             
+            #update graph data
+            if showGraph:
+                print('update graph')
+                timestamp = datetime.datetime.strptime(jdata['timestamp'], '%Y-%m-%d %H:%M:%S.%f')
+                graphTimes.append(timestamp)
+                phasorValues.append(jdata['phasor1'])
+                phasor2Values.append(jdata['phasor2'])
+                differences.append(abs(jdata['difference']))
+                graphPlotA.plot_date(x=graphTimes, y=differences, xdate=True, ydate=False, linestyle='-', marker='None')
+                figure.canvas.draw()
             
         else:
             print('received a message on another topic %s ' % topic)
@@ -60,7 +79,7 @@ root = Tk.Tk()
 root.wm_title("GOSS tutorial Client")
 widthFrame = Tk.Frame(root, width=800, height=1)
 widthFrame.pack(fill=Tk.X, expand=True)
-heightFrame = Tk.Frame(root, width=1, height=550)
+heightFrame = Tk.Frame(root, width=1, height=600)
 heightFrame.pack(side=Tk.RIGHT, fill=Tk.Y, expand=True)
 
 
@@ -69,39 +88,16 @@ heightFrame.pack(side=Tk.RIGHT, fill=Tk.Y, expand=True)
 figure = Figure(figsize=(5,4), dpi=150)
 graphPlotA = figure.add_subplot(111)
 
-# only write ticklabels on the decades 
-#def fmtticks(x, pos=None): 
-    #dt = x #matplotlib.dates.num2date(x) 
-    #if dt.year%10: return '' 
-    #return dt.strftime('%Y')
-#    print(x)
-#    return x 
-
 # this fixes the toolbar x coord 
-graphPlotA.fmt_xdata = matplotlib.dates.DateFormatter('%y-%m-%d %H-%M-%S') 
-
+graphPlotA.fmt_xdata = matplotlib.dates.DateFormatter('%m-%d %H-%M-%S') 
 # this rotates the ticklabels to help with overlapping 
 figure.autofmt_xdate() 
-
-#graphPlotB = figure.add_subplot(111)
-#t = arange(0.0,3.0,0.01)
-#s = sin(2*pi*t)
-
-#a.plot(t,s)
+#figure.title("Phase Angle Difference")
 
 
 # a tk.DrawingArea
 canvas = FigureCanvasTkAgg(figure, master=root)
 
-
-#toolbar = NavigationToolbar2TkAgg( canvas, root )
-#toolbar.update()
-
-#def on_key_event(event):
-#    print('you pressed %s'%event.key)
-#    key_press_handler(event, canvas, toolbar)
-
-#canvas.mpl_connect('key_press_event', on_key_event)
 
 
 
@@ -118,6 +114,7 @@ buttonFrame.pack( side = Tk.TOP)
 
 conn = None
 def _monitor():
+    global conn
     if monitorbutton.config('text')[-1] == 'Start Monitoring':
         monitorbutton.config(text='Stop Monitoring')
         # do monitoring stuff
@@ -134,11 +131,15 @@ def _monitor():
         
         #conn.subscribe(destination='/topic//pmu/PMU_1', id=1, ack='auto')
         
+        addedTextLabel.grid(row=1, column=3)
+        addedText.grid(row=1, column=4)
     else:
         monitorbutton.config(text='Start Monitoring')
         #stop the monitoring
         #hide the graph
-        graphbutton.grid_forget();
+        graphbutton.grid_forget()
+        addedTextLabel.grid_forget()
+        addedText.grid_forget()
         canvas._tkcanvas.pack_forget()
         print('Stop Monitoring')    
         if(conn!=None):
@@ -149,14 +150,20 @@ monitorbutton = Tk.Button(master=buttonFrame, text='Start Monitoring', command=_
 monitorbutton.grid(row=1, column=0)
 
 addedTextLabel = Tk.Label(master=buttonFrame, text="Last Entry Added:")
-addedTextLabel.grid(row=1, column=3)
+#addedTextLabel.grid(row=1, column=3)
 
 addedTextVar = Tk.StringVar()
 addedText = Tk.Label(master=buttonFrame, textvariable=addedTextVar)
-addedText.grid(row=1, column=4)
+#addedText.grid(row=1, column=4)
 
 
 def _graph():
+    #values for the graph
+    global graphTimes 
+    global phasorValues 
+    global phasor2Values 
+    global differences 
+    global showGraph 
     if graphbutton.config('text')[-1] == 'Show Graph':
         graphbutton.config(text='Hide Graph')
         # start the poll for graph data
@@ -167,31 +174,27 @@ def _graph():
        
         #send request for graph data
         formatter = gateway.jvm.pnnl.goss.tutorial.datamodel.PMUPhaseAngleDiffData.DATE_FORMAT
-        startDate = formatter.parse("2014-07-01 00:00:00.000")
+        startDate = formatter.parse(startDateStr)
         dataRequest = gateway.jvm.pnnl.goss.tutorial.request.TutorialDownloadRequestSync(startDate)
         print('Created Request')
         response = client.getResponse(dataRequest)
         data = response.getData()
         print(data)
         jdata = json.loads(data)
-        times = []
-        phasorValues = []
-        phasor2Values = []
+        
         for x in jdata:
-            print(x['timestamp'])
             timestamp = datetime.datetime.strptime(x['timestamp'], '%Y-%m-%d %H:%M:%S.%f')
-            #entry = [timestamp, x['phasor1']]
-            #plotdata.append(entry)
-            
-            #timestamp = formatter.parse(x['timestamp']).getTime()
-            #print(timestamp)
-            times.append(timestamp)
+            print(timestamp,' ',x['phasor1'],' ',x['phasor2'],' ',abs(x['difference']))
+            graphTimes.append(timestamp)
             phasorValues.append(x['phasor1'])
             phasor2Values.append(x['phasor2'])
+            differences.append(abs(x['difference']))
             
-        #dates_float = matplotlib.dates.date2num(times)    
-        graphPlotA.plot_date(x=times, y=phasorValues, xdate=True, ydate=False, linestyle='-')
-        graphPlotA.plot_date(x=times, y=phasor2Values, xdate=True, ydate=False, linestyle='-')
+        #graphPlotA.plot_date(x=graphTimes, y=phasorValues, xdate=True, ydate=False, linestyle='-', marker='None')
+        #graphPlotA.plot_date(x=graphTimes, y=phasor2Values, xdate=True, ydate=False, linestyle='-', marker='None')
+        graphPlotA.plot_date(x=graphTimes, y=differences, xdate=True, ydate=False, linestyle='-', marker='None')
+       
+        showGraph=True
        
     else:
         graphbutton.config(text='Show Graph')
@@ -199,6 +202,11 @@ def _graph():
         # hide the graph
         print('Hide Graph')  
         canvas._tkcanvas.pack_forget()
+        showGraph=False
+        graphTimes = []
+        phasorValues = []
+        phasor2Values = []
+        differences = []
         
 
 graphbutton = Tk.Button(master=buttonFrame, text='Show Graph', command=_graph)
