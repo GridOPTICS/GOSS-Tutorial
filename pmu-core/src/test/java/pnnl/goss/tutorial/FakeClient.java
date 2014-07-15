@@ -41,9 +41,10 @@ public class FakeClient implements Client {
 	}
 
 	@Override
-	public void sendRequest(Request request, GossResponseEvent event,
+	public String sendRequest(Request request, GossResponseEvent event,
 			RESPONSE_FORMAT responseFormat) throws NullPointerException {
 		// TODO Auto-generated method stub
+		return null;
 		
 
 	}

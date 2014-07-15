@@ -1,4 +1,4 @@
-package pnnl.goss.request;
+package pnnl.goss.tutorial.request;
 
 import java.util.Date;
 

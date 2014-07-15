@@ -3,11 +3,11 @@ package pnnl.goss.handlers;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+
+import org.apache.http.auth.UsernamePasswordCredentials;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -17,47 +17,73 @@ import pnnl.goss.core.DataResponse;
 import pnnl.goss.core.Request;
 import pnnl.goss.core.RequestAsync;
 import pnnl.goss.core.Response;
+import pnnl.goss.core.client.Client;
+import pnnl.goss.core.client.GossClient;
+import pnnl.goss.core.client.GossClient.PROTOCOL;
 import pnnl.goss.datasource.GOSSTutorialDataSource;
-import pnnl.goss.request.TutorialDownloadRequestAsync;
+import pnnl.goss.tutorial.request.TutorialDownloadRequestAsync;
+import pnnl.goss.tutorial.request.TutorialDownloadRequestSync;
 import pnnl.goss.server.core.GossRequestHandler;
 import pnnl.goss.tutorial.datamodel.PMUPhaseAngleDiffData;
 
-public class TutorialDesktopDownloadHandler extends GossRequestHandler{
+public class TutorialDesktopDownloadHandler extends GossRequestHandler {
 
-	TutorialDownloadRequestAsync downloadRequest;
+	TutorialDownloadRequestAsync asyncDownloadRequest;
 	long startTime = 0;
 	long endTime = 0;
 	Date startDate;
 	
+	
 	@Override
 	public Response handle(Request request) {
-		return asynchronousHandle(request);
+		if(request instanceof RequestAsync){
+			return asynchronousHandle(request);
+		} else {
+			return synchronousHandle(request);
+		}
 	}
+	 
 	
-
-
+	private Response synchronousHandle(Request request){
+		Date startDate = ((TutorialDownloadRequestSync)request).getStartDate();
+		String resultStr = queryResults(startDate);
+		return new DataResponse(resultStr);
+	}
 	
 	private Response asynchronousHandle(Request request){
 		
-		if(this.downloadRequest==null)
-			this.downloadRequest = (TutorialDownloadRequestAsync) request;
+		if(this.asyncDownloadRequest==null)
+			this.asyncDownloadRequest = (TutorialDownloadRequestAsync) request;
 		if(startTime==0)
-			startTime = downloadRequest.getStartTime();
+			startTime = asyncDownloadRequest.getStartTime();
 		else
 			startTime = endTime; 
-		endTime = startTime+downloadRequest.getSegment();
+		endTime = startTime+asyncDownloadRequest.getSegment();
 		if(startDate==null)
-			startDate = downloadRequest.getStartDate();
+			startDate = asyncDownloadRequest.getStartDate();
+		String json = queryResults(startDate);
+
+		startDate = new Date();
+		DataResponse response  = new DataResponse(json);
+		if(endTime==asyncDownloadRequest.getEndTime())
+			response.setResponseComplete(true);
+		else
+			response.setResponseComplete(false);
+		return response;
+	}
+
+	
+	private String queryResults(Date startDate){
 		List<PMUPhaseAngleDiffData> dataList = new ArrayList<PMUPhaseAngleDiffData>();
 		try{
 			
 	//		SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
 			Connection connection = GOSSTutorialDataSource.getInstance().getConnection();
-			System.out.println(connection);
+			//System.out.println(connection);
 			Statement statement = connection.createStatement();
 			
 			String time = PMUPhaseAngleDiffData.DATE_FORMAT.format(startDate);
-			String queryString = "select `time`,phasor1,phasor2,diff from aggregator where `time`>='"+time+"'";
+			String queryString = "select `time`,phasor1,phasor2,diff from aggregator where `time`>'"+time+"' order by `time`";
 			System.out.println(queryString);
 			ResultSet rows =  statement.executeQuery(queryString);
 			
@@ -83,24 +109,15 @@ public class TutorialDesktopDownloadHandler extends GossRequestHandler{
 			connection.close();
 		} catch(Exception e){
 			e.printStackTrace();
-			DataError error = new DataError(e.getCause().toString());
-			DataResponse response  = new DataResponse(error);
-			return response;
+			return null;
 		}	
 		
 		Gson gson = new GsonBuilder().setDateFormat(PMUPhaseAngleDiffData.DATE_FORMAT.toPattern()).create();
 		String json = gson.toJson(dataList);
-System.out.println("GENERATED JSON "+json);
-
-		startDate = new Date();
-		DataResponse response  = new DataResponse(json);
-		if(endTime==downloadRequest.getEndTime())
-			response.setResponseComplete(true);
-		else
-			response.setResponseComplete(false);
-		return response;
+		System.out.println("GENERATED JSON "+json);
+		return json;
 	}
-
+	
 }
 
 
