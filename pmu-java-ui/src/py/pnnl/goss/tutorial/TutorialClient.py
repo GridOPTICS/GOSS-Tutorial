@@ -1,12 +1,9 @@
 #!/usr/bin/env python
 
 import matplotlib
-from matplotlib.pyplot import plot
 matplotlib.use('TkAgg')
 
-import datetime, calendar, time
-from numpy import arange, sin, pi
-import numpy
+import datetime
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg #, NavigationToolbar2TkAgg
 
 
