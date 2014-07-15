@@ -25,7 +25,6 @@ public class UploadLauncher {
 			data.setTimestamp(new Date());
 			
 			UploadRequest request = new UploadRequest(data,"Tutorial");
-			
 			client.getResponse(request);
 			
 		}

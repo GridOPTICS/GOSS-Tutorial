@@ -25,7 +25,7 @@ public class PMUAggregatorImpl implements PMUAggregator{
 
 	
 	final Client client;
-	final SimpleDateFormat fmt = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+	
 	private String pmu1Topic;
 	private String pmu2Topic;
 	private String outputTopic;
@@ -39,7 +39,7 @@ public class PMUAggregatorImpl implements PMUAggregator{
 	}
 	
 	private void publishDifference(Date date, Double value1, Double value2){
-		String timestamp = fmt.format(date);
+		String timestamp = PMUPhaseAngleDiffData.DATE_FORMAT.format(date);
 		Double value = value1-value2;
 //		HashMap<String, String> map = new HashMap<String, String>();
 //		map.put(pmu1Topic, value1.toString());
@@ -52,7 +52,7 @@ public class PMUAggregatorImpl implements PMUAggregator{
 		data.setPhasor2(value2);
 		data.setDifference(value);
 		data.setTimestamp(date);
-		Gson gson = new GsonBuilder().setDateFormat(fmt.toPattern()).create();
+		Gson gson = new GsonBuilder().setDateFormat(PMUPhaseAngleDiffData.DATE_FORMAT.toPattern()).create();
 		
 		String json = gson.toJson(data);
 		System.out.println("Publishing "+json+" to "+outputTopic);
@@ -82,7 +82,7 @@ public class PMUAggregatorImpl implements PMUAggregator{
 						Date date = null;
 						Double dblValue = null;
 						try {
-							date = fmt.parse(args[0]);
+							date = PMUPhaseAngleDiffData.DATE_FORMAT.parse(args[0]);
 							dblValue = Double.parseDouble(args[2]);					
 							topic1Values.put(date, dblValue);
 						} catch (ParseException e) {
@@ -116,7 +116,7 @@ public class PMUAggregatorImpl implements PMUAggregator{
 						Date date = null;
 						Double dblValue = null;
 						try {
-							date = fmt.parse(args[0]);
+							date = PMUPhaseAngleDiffData.DATE_FORMAT.parse(args[0]);
 							dblValue = Double.parseDouble(args[1]);					
 							topic2Values.put(date, dblValue);
 						} catch (ParseException e) {

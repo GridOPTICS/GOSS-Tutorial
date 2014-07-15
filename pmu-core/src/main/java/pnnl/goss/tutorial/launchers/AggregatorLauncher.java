@@ -1,3 +1,4 @@
+package pnnl.goss.tutorial.launchers;
 import org.apache.http.auth.UsernamePasswordCredentials;
 
 import pnnl.goss.core.DataResponse;
@@ -11,22 +12,28 @@ import pnnl.goss.tutorial.impl.PMUAggregatorImpl;
 
 
 
-public class AggregatorLauncher {
+public class AggregatorLauncher extends Thread{
 	PMUAggregator aggregator;
 	private static Client client = new GossClient(new UsernamePasswordCredentials("pmu_user", "password"),PROTOCOL.STOMP);
 	
 	public static void main(String[] args){
 		
 		final AggregatorLauncher launcher = new AggregatorLauncher();
+		launcher.start();
+		
+	}
+	@Override
+	public void run() {
+		System.out.println("CREATE AGGREGATOR LAUNCHER");
 		GossResponseEvent event = new GossResponseEvent() {
 			public void onMessage(Response response) {
-				String message = (String)((DataResponse)response).getData(); 
+				String message = (String)((DataResponse)response).getData();
+				System.out.println("AGG GOT MESSAGE "+message);
 				if(message.contains("start agg"))
-					launcher.launch();
+					launch();
 			}
 		};
 		client.subscribeTo("/topic/goss/tutorial/control", event);
-		
 	}
 	
 	protected void launch(){

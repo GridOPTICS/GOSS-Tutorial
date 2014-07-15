@@ -1,3 +1,4 @@
+package pnnl.goss.tutorial.launchers;
 import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -17,7 +18,7 @@ import pnnl.goss.tutorial.PMUGenerator;
 import pnnl.goss.tutorial.impl.PMUGeneratorImpl;
 
 
-public class GeneratorLauncher {
+public class GeneratorLauncher extends Thread {
 	private PMUGenerator generator1;
 	private PMUGenerator generator2;
 	private static Client client = new GossClient(new UsernamePasswordCredentials("pmu_user", "password"),PROTOCOL.STOMP);
@@ -25,16 +26,23 @@ public class GeneratorLauncher {
 	public static void main(String[] args){
 		
 		final GeneratorLauncher launcher = new GeneratorLauncher();
+		launcher.start();	
+		
+	}
+	
+	@Override
+	public void run() {
+		System.out.println("CREATE GENERATOR LAUNCHER");
 		GossResponseEvent event = new GossResponseEvent() {
 			public void onMessage(Response response) {
 				String message = (String)((DataResponse)response).getData(); 
+				System.out.println("GEN GOT MESSAGE "+message);
 				if(message.contains("start pmu"))
-					launcher.launch();	
+					launch();	
 			}
 		};
 		client.subscribeTo("/topic/goss/tutorial/control", event);
-		
-		
+	
 	}
 	
 	protected void launch(){

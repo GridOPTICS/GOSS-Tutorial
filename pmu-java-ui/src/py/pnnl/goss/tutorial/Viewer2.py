@@ -16,10 +16,12 @@ import tkinter as Tk
 
 import stomp
 import json
+from py4j.java_gateway import JavaGateway
+gateway = JavaGateway()    
+gateway.launch_gateway
+client = gateway.jvm.pnnl.goss.core.client.GossClient()
 
-
-
-agg_topic = '/topic//pmu/PMU_1/PMU_2/padiff'
+agg_topic = '/topic/pmu/PMU_1/PMU_2/agg'
 
 class StompListener(object):
     def on_error(self, headers, message):
@@ -27,15 +29,33 @@ class StompListener(object):
     def on_message(self, headers, message):
         topic = headers.pop("destination", "")
         if(topic==agg_topic):
-            print('received a message on aggregate topic %s ' % message)
+            #Parse json message
+            jdata = json.loads(message)
+            timeStr = jdata['timestamp']
+            formatter = gateway.jvm.pnnl.goss.tutorial.datamodel.PMUPhaseAngleDiffData.DATE_FORMAT
+            time = formatter.parse(timeStr)
+            
+            print(' uploading %s' % message)
+            #Send to goss using client api
+            dataObj = gateway.jvm.pnnl.goss.tutorial.datamodel.PMUPhaseAngleDiffData(time, jdata['phasor1'], jdata['phasor2'], jdata['difference'])
+            uploadReq = gateway.jvm.pnnl.goss.core.UploadRequest(dataObj,"Tutorial")
+            client.getResponse(uploadReq)
+            
+            #Update last posted label
+            newLabel = str(time)+", "+str(jdata['phasor1'])+", "+str(jdata['phasor1'])+", "+str(jdata['difference'])
+            addedTextVar.set(newLabel)
+            
+            
         else:
             print('received a message on another topic %s ' % topic)
 
+
+#set up the window
 root = Tk.Tk()
 root.wm_title("GOSS tutorial Client")
 widthFrame = Tk.Frame(root, width=800, height=1)
 widthFrame.pack(fill=Tk.X, expand=True)
-heightFrame = Tk.Frame(root, width=1, height=400)
+heightFrame = Tk.Frame(root, width=1, height=550)
 heightFrame.pack(side=Tk.RIGHT, fill=Tk.Y, expand=True)
 
 
@@ -85,7 +105,7 @@ def _monitor():
         
         #start connection
         
-        conn = stomp.Connection([('localhost',61620)])
+        conn = stomp.Connection([('localhost',61613)])
         conn.set_listener('', StompListener())
         conn.start()
         conn.connect('pmu_user', 'password')
@@ -107,8 +127,14 @@ def _monitor():
 monitorbutton = Tk.Button(master=buttonFrame, text='Start Monitoring', command=_monitor)
 monitorbutton.grid(row=1, column=0)
 
-addedText = Tk.Label(master=buttonFrame, text="Entry Added:")
-addedText.grid(row=1, column=3)
+addedTextLabel = Tk.Label(master=buttonFrame, text="Last Entry Added:")
+addedTextLabel.grid(row=1, column=3)
+
+addedTextVar = Tk.StringVar()
+addedText = Tk.Label(master=buttonFrame, textvariable=addedTextVar)
+addedText.grid(row=1, column=4)
+
+
 def _graph():
     if graphbutton.config('text')[-1] == 'Show Graph':
         graphbutton.config(text='Hide Graph')

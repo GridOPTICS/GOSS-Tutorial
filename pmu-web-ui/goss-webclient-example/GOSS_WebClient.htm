@@ -6,7 +6,7 @@
     <script src="js/vendor/modernizr.js"></script>
 	<script src="js/stomp.js"></script>
 	<script type="text/javascript">
-	var client = Stomp.client( "ws://WE22743.pnl.gov:61614");
+	var client = Stomp.client( "ws://localhost:61614");
 	client.connect( "pmu_user", "password",
 		function() {
 			client.subscribe("/topic/goss/tutorial/pmu/PMU_1",
