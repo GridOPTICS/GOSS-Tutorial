@@ -6,10 +6,6 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.Random;
 
-import org.apache.felix.ipojo.annotations.Component;
-import org.apache.felix.ipojo.annotations.Instantiate;
-import org.apache.felix.ipojo.annotations.Invalidate;
-import org.apache.felix.ipojo.annotations.Validate;
 import org.apache.http.auth.UsernamePasswordCredentials;
 
 import pnnl.goss.core.DataResponse;
@@ -21,34 +17,17 @@ import pnnl.goss.core.client.GossResponseEvent;
 import pnnl.goss.tutorial.PMUGenerator;
 import pnnl.goss.tutorial.impl.PMUGeneratorImpl;
 
-@Component
-@Instantiate
+
 public class GeneratorLauncher extends Thread {
 	private PMUGenerator generator1;
 	private PMUGenerator generator2;
 	private static Client client = new GossClient(new UsernamePasswordCredentials("pmu_user", "password"),PROTOCOL.STOMP);
-	
-	private GeneratorLauncher launcher;
 	
 	public static void main(String[] args){
 		
 		final GeneratorLauncher launcher = new GeneratorLauncher();
 		launcher.start();	
 		
-	}
-	
-	@Validate
-	public void startLauncher(){
-		System.out.println("WOOT GEN ACTIVATOR");
-		launcher = new GeneratorLauncher();
-		launcher.start();
-	}
-	
-	@Invalidate
-	public void stopLauncher(){
-		System.out.println("NO WOOT  GEN BAD!");
-		launcher.stop();
-		launcher=null;
 	}
 	
 	@Override
@@ -102,18 +81,27 @@ public class GeneratorLauncher extends Thread {
 				}
 				
 				//Create data for PMU 1 Phasor 1 stream
+				min = -15;
+				max = 15;
 				phase = decimalFormat.format(min + (max - min) * random.nextDouble());
-				angle = decimalFormat.format(min + (max - min) * random.nextDouble());
+				//angle = decimalFormat.format(min + (max - min) * random.nextDouble());
+				min = 58;
+				max = 62;
 				freq = decimalFormat.format(min + (max - min) * random.nextDouble());
-			
-				dataArr1[i] = formatter.format(datetime)+","+phase+","+angle+","+freq;
+				//dataArr1[i] = formatter.format(datetime)+","+phase+","+angle+","+freq;
+				dataArr1[i] = formatter.format(datetime)+","+phase+","+freq;
 				
 				
 				//Create data for PMU 2 Phasor 1 stream
+				min = -15;
+				max = 15;
 				phase = decimalFormat.format(min + (max - min) * random.nextDouble());
-				angle = decimalFormat.format(min + (max - min) * random.nextDouble());
+				//angle = decimalFormat.format(min + (max - min) * random.nextDouble());
+				min = 58;
+				max = 62;
 				freq = decimalFormat.format(min + (max - min) * random.nextDouble());
-				dataArr2[i] = formatter.format(datetime)+","+phase+","+angle+","+freq;
+				//dataArr2[i] = formatter.format(datetime)+","+phase+","+angle+","+freq;
+				dataArr2[i] = formatter.format(datetime)+","+phase+","+freq;
 				
 			}
 			
