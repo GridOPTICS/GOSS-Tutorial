@@ -11,26 +11,49 @@
 		function() {
 			client.subscribe("/topic/goss/tutorial/pmu/PMU_1",
 				function( message ) {
+					mesg = 	message.body
+					msg = mesg.split(",");
 					pmu1TextArea = document.getElementById("pmu1TextArea");
-					value = pmu1TextArea.innerHTML
-					value = message.body + '\n' + value
-					pmu1TextArea.innerHTML = value
+					pmu1TextAreaValue = pmu1TextArea.innerHTML
+					str = '---\n'
+					str = str + 'timestamp = ' + msg[0] + '\n'
+					str = str + 'phase angle = ' + msg[1] + '\n'
+					str = str + 'frequency = ' + msg[2] + '\n'
+					str = str + '---'
+					pmu1TextAreaValue = str + pmu1TextAreaValue
+					pmu1TextArea.innerHTML = pmu1TextAreaValue 
 				}
 			);
 			client.subscribe("/topic/goss/tutorial/pmu/PMU_2",
 				function( message ) {
+					mesg = 	message.body
+					msg = mesg.split(",");
 					pmu2TextArea = document.getElementById("pmu2TextArea");
-					value = pmu2TextArea.innerHTML
-					value = message.body + '\n' + value
-					pmu2TextArea.innerHTML = value
+					pmu2TextAreaValue = pmu2TextArea.innerHTML
+					str = '---\n'
+					str = str + 'timestamp = ' + msg[0] + '\n'
+					str = str + 'phase angle = ' + msg[1] + '\n'
+					str = str + 'frequency = ' + msg[2] + '\n'
+					str = str + '---'
+					pmu2TextAreaValue = str + pmu2TextAreaValue
+					pmu2TextArea.innerHTML = pmu2TextAreaValue 
 				}
 			);
 			client.subscribe("/topic/pmu/PMU_1/PMU_2/agg",
 				function( message ) {
+					//message = {"timestamp":"2014-07-10 01:00:02.013","phasor1":59.13,"phasor2":-11.9,"difference":71.03}
+					obj = JSON.parse(message.body);
+					alert(obj)
 					aggTextArea = document.getElementById("aggTextArea");
-					value = aggTextArea.innerHTML
-					value = message.body + '\n' + value
-					aggTextArea.innerHTML = value
+					aggTextAreaValue = aggTextArea.innerHTML
+					str = '---\n'
+					str = str + 'timestamp = ' + obj.timestamp + '\n'
+					str = str + 'phasor1 = ' + obj.phasor1 + '\n'
+					str = str + 'phasor2 = ' + obj.phasor2 + '\n'
+					str = str + 'difference = ' + obj.difference + '\n'
+					str = str + '---'
+					aggTextAreaValue = str + aggTextAreaValue
+					aggTextArea.innerHTML = aggTextAreaValue
 				}
 			);
 		}
