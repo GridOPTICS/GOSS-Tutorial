@@ -1,4 +1,8 @@
 package pnnl.goss.tutorial.launchers;
+import org.apache.felix.ipojo.annotations.Component;
+import org.apache.felix.ipojo.annotations.Instantiate;
+import org.apache.felix.ipojo.annotations.Invalidate;
+import org.apache.felix.ipojo.annotations.Validate;
 import org.apache.http.auth.UsernamePasswordCredentials;
 
 import pnnl.goss.core.DataResponse;
@@ -11,10 +15,12 @@ import pnnl.goss.tutorial.PMUAggregator;
 import pnnl.goss.tutorial.impl.PMUAggregatorImpl;
 
 
-
+@Component
+@Instantiate
 public class AggregatorLauncher extends Thread{
 	PMUAggregator aggregator;
 	private static Client client = new GossClient(new UsernamePasswordCredentials("pmu_user", "password"),PROTOCOL.STOMP);
+	private AggregatorLauncher launcher; 
 	
 	public static void main(String[] args){
 		
@@ -22,6 +28,21 @@ public class AggregatorLauncher extends Thread{
 		launcher.start();
 		
 	}
+	
+	@Validate
+	public void startLauncher(){
+		System.out.println("WOOT ACTIVATOR");
+		launcher = new AggregatorLauncher();
+		launcher.start();
+	}
+	
+	@Invalidate
+	public void stopLauncher(){
+		System.out.println("NO WOOT BAD!");
+		launcher.stop();
+		launcher=null;
+	}
+	
 	@Override
 	public void run() {
 		System.out.println("CREATE AGGREGATOR LAUNCHER");
@@ -35,6 +56,7 @@ public class AggregatorLauncher extends Thread{
 		};
 		client.subscribeTo("/topic/goss/tutorial/control", event);
 	}
+	
 	
 	protected void launch(){
 		String pmu1Id = "PMU_1";
