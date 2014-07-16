@@ -28,6 +28,7 @@ public class AggregatorLauncher extends Thread{
 		
 	}
 	
+	
 	@Validate
 	public void startLauncher(){
 		System.out.println("WOOT ACTIVATOR");
