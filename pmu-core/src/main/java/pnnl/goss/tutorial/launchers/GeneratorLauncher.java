@@ -6,6 +6,10 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.Random;
 
+import org.apache.felix.ipojo.annotations.Component;
+import org.apache.felix.ipojo.annotations.Instantiate;
+import org.apache.felix.ipojo.annotations.Invalidate;
+import org.apache.felix.ipojo.annotations.Validate;
 import org.apache.http.auth.UsernamePasswordCredentials;
 
 import pnnl.goss.core.DataResponse;
@@ -17,17 +21,32 @@ import pnnl.goss.core.client.GossResponseEvent;
 import pnnl.goss.tutorial.PMUGenerator;
 import pnnl.goss.tutorial.impl.PMUGeneratorImpl;
 
-
+@Component
+@Instantiate
 public class GeneratorLauncher extends Thread {
 	private PMUGenerator generator1;
 	private PMUGenerator generator2;
 	private static Client client = new GossClient(new UsernamePasswordCredentials("pmu_user", "password"),PROTOCOL.STOMP);
-	
+	private GeneratorLauncher launcher;
 	public static void main(String[] args){
 		
-		final GeneratorLauncher launcher = new GeneratorLauncher();
-		launcher.start();	
+		new GeneratorLauncher().startLauncher();
 		
+	}
+	
+	@Validate
+	public void startLauncher(){
+	
+		if(launcher==null){
+			launcher = new GeneratorLauncher();
+			launcher.start();
+		}
+	}
+	
+	@Invalidate
+	public void stopLauncher(){
+		launcher.stop();
+		launcher=null;
 	}
 	
 	@Override
