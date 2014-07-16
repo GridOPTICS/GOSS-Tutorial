@@ -79,21 +79,19 @@ widthFrame.pack(fill=Tk.X, expand=True)
 heightFrame = Tk.Frame(root, width=1, height=600)
 heightFrame.pack(side=Tk.RIGHT, fill=Tk.Y, expand=True)
 
-
-
-
 figure = Figure(figsize=(5,4), dpi=150)
 graphPlotA = figure.add_subplot(111)
-
-# this fixes the toolbar x coord 
 graphPlotA.fmt_xdata = matplotlib.dates.DateFormatter('%m-%d %H-%M-%S') 
 # this rotates the ticklabels to help with overlapping 
 figure.autofmt_xdate() 
+# a tk.DrawingArea
+canvas = FigureCanvasTkAgg(figure, master=root)
+
+
+
 #figure.title("Phase Angle Difference")
 
 
-# a tk.DrawingArea
-canvas = FigureCanvasTkAgg(figure, master=root)
 
 
 
@@ -123,7 +121,7 @@ def _monitor():
         conn = stomp.Connection([('localhost',61613)])
         conn.set_listener('', StompListener())
         conn.start()
-        conn.connect('pmu_user', 'password')
+        conn.connect(username, pw)
         conn.subscribe(destination=agg_topic, id=1, ack='auto')
         
         #conn.subscribe(destination='/topic//pmu/PMU_1', id=1, ack='auto')
