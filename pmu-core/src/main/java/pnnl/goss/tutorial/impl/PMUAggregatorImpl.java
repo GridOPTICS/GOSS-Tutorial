@@ -2,24 +2,23 @@ package pnnl.goss.tutorial.impl;
 
 
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 
 import org.apache.felix.ipojo.annotations.Property;
 import org.apache.http.auth.UsernamePasswordCredentials;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-
 import pnnl.goss.core.DataResponse;
 import pnnl.goss.core.Response;
 import pnnl.goss.core.client.Client;
 import pnnl.goss.core.client.GossClient;
-import pnnl.goss.core.client.GossResponseEvent;
 import pnnl.goss.core.client.GossClient.PROTOCOL;
+import pnnl.goss.core.client.GossResponseEvent;
 import pnnl.goss.tutorial.PMUAggregator;
 import pnnl.goss.tutorial.datamodel.PMUPhaseAngleDiffData;
+
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 public class PMUAggregatorImpl implements PMUAggregator{
 
@@ -83,7 +82,7 @@ public class PMUAggregatorImpl implements PMUAggregator{
 						Double dblValue = null;
 						try {
 							date = PMUPhaseAngleDiffData.DATE_FORMAT.parse(args[0].trim());
-							dblValue = Double.parseDouble(args[2].trim());					
+							dblValue = Double.parseDouble(args[1].trim());
 							topic1Values.put(date, dblValue);
 						} catch (ParseException e) {
 							// TODO Auto-generated catch block
@@ -117,11 +116,10 @@ public class PMUAggregatorImpl implements PMUAggregator{
 						Double dblValue = null;
 						try {
 							date = PMUPhaseAngleDiffData.DATE_FORMAT.parse(args[0].trim());
-							dblValue = Double.parseDouble(args[1].trim());					
+							dblValue = Double.parseDouble(args[1].trim());	
 							topic2Values.put(date, dblValue);
 						} catch (ParseException e) {
-							// TODO Auto-generated catch block
-							System.err.println("Could not parse date "+args[0]);
+							System.err.println("Could not parse date "+args[0].trim());
 							e.printStackTrace();
 						}
 						
