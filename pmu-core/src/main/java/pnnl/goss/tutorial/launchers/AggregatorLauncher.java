@@ -21,19 +21,20 @@ public class AggregatorLauncher extends Thread{
 	PMUAggregator aggregator;
 	private static Client client = new GossClient(new UsernamePasswordCredentials("pmu_user", "password"),PROTOCOL.STOMP);
 	private AggregatorLauncher launcher; 
+	private boolean running = false;
 	
 	public static void main(String[] args){
-		
-		final AggregatorLauncher launcher = new AggregatorLauncher();
-		launcher.start();
+		new AggregatorLauncher().startLauncher();
 		
 	}
 	
 	@Validate
 	public void startLauncher(){
 		System.out.println("WOOT ACTIVATOR");
-		launcher = new AggregatorLauncher();
-		launcher.start();
+		if(launcher==null){
+			launcher = new AggregatorLauncher();
+			launcher.start();
+		}
 	}
 	
 	@Invalidate
@@ -50,8 +51,10 @@ public class AggregatorLauncher extends Thread{
 			public void onMessage(Response response) {
 				String message = (String)((DataResponse)response).getData();
 				System.out.println("AGG GOT MESSAGE "+message);
-				if(message.contains("start agg"))
+				if(message.contains("start agg") & running==false){
 					launch();
+					running=true;
+				}
 			}
 		};
 		client.subscribeTo("/topic/goss/tutorial/control", event);
