@@ -19,14 +19,14 @@
 
 				<configuration>
 					<instructions>
-						<_wab>src/main/webapp</_wab>
+						<!-- <_wab>src/main/webapp</_wab> -->
 						<Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
 						<Bundle-Version>${project.version}</Bundle-Version>
-						<Web-ContextPath>pmu-tutorial</Web-ContextPath>
-						<Webapp-Context>pmu-tutorial</Webapp-Context>
-						<Import-Package>
-							*
-						</Import-Package>
+<!-- 						<Web-ContextPath>pmu-tutorial</Web-ContextPath> -->
+<!-- 						<Webapp-Context>pmu-tutorial</Webapp-Context> -->
+<!-- 						<Import-Package> -->
+<!-- 							javax.servlet,javax.servlet.http -->
+<!-- 						</Import-Package> -->
 					</instructions>
 				</configuration>
 			</plugin>
