@@ -31,7 +31,7 @@ public class AggregatorLauncher extends Thread{
 	
 	@Validate
 	public void startLauncher(){
-		System.out.println("WOOT ACTIVATOR");
+	
 		if(launcher==null){
 			launcher = new AggregatorLauncher();
 			launcher.start();
@@ -40,7 +40,6 @@ public class AggregatorLauncher extends Thread{
 	
 	@Invalidate
 	public void stopLauncher(){
-		System.out.println("NO WOOT BAD!");
 		launcher.stop();
 		launcher=null;
 	}
