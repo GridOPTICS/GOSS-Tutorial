@@ -82,8 +82,8 @@ public class PMUAggregatorImpl implements PMUAggregator{
 						Date date = null;
 						Double dblValue = null;
 						try {
-							date = PMUPhaseAngleDiffData.DATE_FORMAT.parse(args[0]);
-							dblValue = Double.parseDouble(args[2]);					
+							date = PMUPhaseAngleDiffData.DATE_FORMAT.parse(args[0].trim());
+							dblValue = Double.parseDouble(args[2].trim());					
 							topic1Values.put(date, dblValue);
 						} catch (ParseException e) {
 							// TODO Auto-generated catch block
@@ -116,8 +116,8 @@ public class PMUAggregatorImpl implements PMUAggregator{
 						Date date = null;
 						Double dblValue = null;
 						try {
-							date = PMUPhaseAngleDiffData.DATE_FORMAT.parse(args[0]);
-							dblValue = Double.parseDouble(args[1]);					
+							date = PMUPhaseAngleDiffData.DATE_FORMAT.parse(args[0].trim());
+							dblValue = Double.parseDouble(args[1].trim());					
 							topic2Values.put(date, dblValue);
 						} catch (ParseException e) {
 							// TODO Auto-generated catch block
