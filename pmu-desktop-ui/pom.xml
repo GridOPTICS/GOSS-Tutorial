@@ -5,8 +5,8 @@
     <artifactId>tutorial-pmu-feature</artifactId>
     <version>0.0.1-SNAPSHOT</version>
   </parent>
-  <artifactId>tutorial-pmu-java-ui</artifactId>
-  <name>PMU Tutorial Java UI</name>
+  <artifactId>tutorial-pmu-desktop-ui</artifactId>
+  <name>PMU Tutorial Desktop UI</name>
   <dependencies>
   	<dependency>
 		<groupId>pnnl.goss</groupId>

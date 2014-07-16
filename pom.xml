@@ -9,7 +9,7 @@
 	<modules>
 		<module>pmu-core</module>
 		<module>pmu-web-ui</module>
-		<module>pmu-java-ui</module>
+		<module>pmu-desktop-ui</module>
 	</modules>
 
 
