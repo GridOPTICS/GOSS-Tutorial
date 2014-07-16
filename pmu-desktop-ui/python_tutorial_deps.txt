@@ -1,3 +1,6 @@
 Scripts\easy_install.exe py4j
-Scripts\easy_install.exe matplotlib
-Download https://pypi.python.org/pypi/stomp.py, extract, and run 'python setup.py install'
+easy_install python-dateutil
+easy_install pyparsing
+easy_install numpy
+Scripts\easy_install.exe matplotlib  or if this doesn't work then download the correct version from http://matplotlib.org/downloads.html
+Download https://pypi.python.org/packages/source/s/stomp.py/stomp.py-4.0.12.tar.gz, extract, and run 'python setup.py install'
