@@ -1,3 +1,0 @@
-Scripts\easy_install.exe py4j
-Scripts\easy_install.exe matplotlib
-Download https://pypi.python.org/pypi/stomp.py, extract, and run setup.py
