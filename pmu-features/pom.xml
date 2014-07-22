@@ -46,6 +46,7 @@
                             <artifacts>
                                 <artifact>
                                     <file>target/classes/features.xml</file>
+                                    <classifier>feature</classifier>
                                     <type>xml</type>
                                 </artifact>
                             </artifacts>
