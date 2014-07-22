@@ -37,7 +37,20 @@
  	* on Linux bin/karaf
  	* on Windows bin/karaf.bat
 
-6. Install Required Features
-	* feature:repo-add activemq
+6. Register and Install Required Features/Bundles
+	* feature:repo-add activemq 5.9.0
+	* feature:repo-add cxf 2.7.10
+	* feature:repo-add http://repo1.maven.org/maven2/org/apache/felix/org.apache.felix.ipojo.features/1.12.0/org.apache.felix.ipojo.features-1.12.0.xml
+	* feature:install ipojo-all activemq cxf
+	* install -s wrap:mvn:net.sf.py4j/py4j/0.8.1
+
+7. Register GOSS
+	* feature:repo-add mvn:pnnl.goss/goss-core-feature/xml/features
+	* feature:repo-add mvn:pnnl.goss.tutorial/tutorial-pmu-features/0.0.1-SNAPSHOT/xml/feature
+	* feature:install goss-core-feature tutorial-pmu-feature 
+
+8. Open browser to http://localhost:8181/pmu-tutorial/index.html
+9. Click 'Start PMU Stream'
+10. Click 'Start Aggregator'
  
 
