@@ -3,11 +3,11 @@
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>pnnl.goss.tutorial</groupId>
-		<artifactId>tutorial-pmu-feature</artifactId>
+		<artifactId>tutorial-pmu-common</artifactId>
 		<version>0.0.1-SNAPSHOT</version>
 	</parent>
 	<artifactId>tutorial-pmu-core</artifactId>
-	<name>PMU Tutorial Core</name>
+	<name>PMU Tutorial Common</name>
 	<packaging>bundle</packaging>
 
 	<dependencies>
