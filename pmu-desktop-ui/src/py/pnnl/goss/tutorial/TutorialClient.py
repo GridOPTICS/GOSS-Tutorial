@@ -51,7 +51,7 @@ class StompListener(object):
             client.getResponse(uploadReq)
             
             #Update last posted label
-            newLabel = str(time)+", "+str(jdata['phasor1'])+", "+str(jdata['phasor1'])+", "+str(jdata['difference'])
+            newLabel = str(time)+", "+str(jdata['phasor1'])+", "+str(jdata['phasor2'])+", "+str(jdata['difference'])
             addedTextVar.set(newLabel)
             
             #update graph data
