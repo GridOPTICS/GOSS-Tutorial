@@ -25,7 +25,7 @@
 	goss.broker.name=GOSS-Activemq-Broker  
 	goss.broker.data=data/goss-broker
 
-4. Build GOSS via maven
+4. Build GOSS and GOSS-Tutorial via maven
 	* cd GOSS
 	* mvn install
 	* cd ../GOSS-Tutorial
