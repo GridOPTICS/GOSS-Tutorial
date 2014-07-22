@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>pnnl.goss.tutorial</groupId>
-    <artifactId>tutorial-pmu-feature</artifactId>
+    <artifactId>tutorial-pmu</artifactId>
     <version>0.0.1-SNAPSHOT</version>
   </parent>
   <artifactId>tutorial-pmu-desktop-ui</artifactId>
@@ -16,7 +16,7 @@
 	</dependency>
   	<dependency>
   		<groupId>pnnl.goss.tutorial</groupId>
-  		<artifactId>tutorial-pmu-core</artifactId>
+  		<artifactId>tutorial-pmu-common</artifactId>
   		<version>0.0.1-SNAPSHOT</version>
   	</dependency>
   </dependencies>

@@ -6,6 +6,10 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.Random;
 
+import org.apache.felix.ipojo.annotations.Component;
+import org.apache.felix.ipojo.annotations.Instantiate;
+import org.apache.felix.ipojo.annotations.Invalidate;
+import org.apache.felix.ipojo.annotations.Validate;
 import org.apache.http.auth.UsernamePasswordCredentials;
 
 import pnnl.goss.core.DataResponse;
@@ -17,17 +21,33 @@ import pnnl.goss.core.client.GossResponseEvent;
 import pnnl.goss.tutorial.PMUGenerator;
 import pnnl.goss.tutorial.impl.PMUGeneratorImpl;
 
-
+@Component
+@Instantiate
 public class GeneratorLauncher extends Thread {
 	private PMUGenerator generator1;
 	private PMUGenerator generator2;
 	private static Client client = new GossClient(new UsernamePasswordCredentials("pmu_user", "password"),PROTOCOL.STOMP);
-	
+	private boolean running = false;
+	private GeneratorLauncher launcher;
 	public static void main(String[] args){
 		
-		final GeneratorLauncher launcher = new GeneratorLauncher();
-		launcher.start();	
+		new GeneratorLauncher().startLauncher();
 		
+	}
+	
+	@Validate
+	public void startLauncher(){
+	
+		if(launcher==null){
+			launcher = new GeneratorLauncher();
+			launcher.start();
+		}
+	}
+	
+	@Invalidate
+	public void stopLauncher(){
+		launcher.stop();
+		launcher=null;
 	}
 	
 	@Override
@@ -37,8 +57,16 @@ public class GeneratorLauncher extends Thread {
 			public void onMessage(Response response) {
 				String message = (String)((DataResponse)response).getData(); 
 				System.out.println("GEN GOT MESSAGE "+message);
-				if(message.contains("start pmu"))
-					launch();	
+				if(message.contains("start pmu") && running==false){
+					launch();
+					running = true;
+				}
+				if(message.contains("stop pmu") && running==true){
+					generator1.stop();
+					generator2.stop();
+					running = false;
+				}
+				
 			}
 		};
 		client.subscribeTo("/topic/goss/tutorial/control", event);
@@ -61,7 +89,6 @@ public class GeneratorLauncher extends Thread {
 			SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
 			DecimalFormat decimalFormat = new DecimalFormat("#.##");
 			String phase;
-			String angle;
 			String freq;
 			int totalValues = 1000;
 			String dataArr1[] = new String[totalValues];
@@ -84,23 +111,18 @@ public class GeneratorLauncher extends Thread {
 				min = -15;
 				max = 15;
 				phase = decimalFormat.format(min + (max - min) * random.nextDouble());
-				//angle = decimalFormat.format(min + (max - min) * random.nextDouble());
 				min = 58;
 				max = 62;
 				freq = decimalFormat.format(min + (max - min) * random.nextDouble());
-				//dataArr1[i] = formatter.format(datetime)+","+phase+","+angle+","+freq;
 				dataArr1[i] = formatter.format(datetime)+","+phase+","+freq;
-				
 				
 				//Create data for PMU 2 Phasor 1 stream
 				min = -15;
 				max = 15;
 				phase = decimalFormat.format(min + (max - min) * random.nextDouble());
-				//angle = decimalFormat.format(min + (max - min) * random.nextDouble());
 				min = 58;
 				max = 62;
 				freq = decimalFormat.format(min + (max - min) * random.nextDouble());
-				//dataArr2[i] = formatter.format(datetime)+","+phase+","+angle+","+freq;
 				dataArr2[i] = formatter.format(datetime)+","+phase+","+freq;
 				
 			}
@@ -121,7 +143,6 @@ public class GeneratorLauncher extends Thread {
 	
 	@Override
 	protected void finalize() throws Throwable {
-		// TODO Auto-generated method stub
 		super.finalize();
 		
 		if(generator1!=null){

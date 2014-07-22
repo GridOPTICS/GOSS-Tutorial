@@ -25,4 +25,7 @@ public interface PMUAggregator {
 	public String getOutputTopic();
 
 	public void setOutputTopic(String outputTopic);
+	
+	public void stop();
+	
 }
