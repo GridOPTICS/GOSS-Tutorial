@@ -45,7 +45,7 @@
 	* install -s wrap:mvn:net.sf.py4j/py4j/0.8.1
 
 7. Register GOSS
-	* feature:repo-add mvn:pnnl.goss/goss-core-feature/xml/features
+	* feature:repo-add mvn:pnnl.goss/goss-core-feature/0.1.3-SNAPSHOT/xml/features
 	* feature:repo-add mvn:pnnl.goss.tutorial/tutorial-pmu-features/0.0.1-SNAPSHOT/xml/feature
 	* feature:install goss-core-feature tutorial-pmu-feature 
 
