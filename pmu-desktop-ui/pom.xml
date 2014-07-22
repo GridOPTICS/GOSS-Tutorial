@@ -16,7 +16,7 @@
 	</dependency>
   	<dependency>
   		<groupId>pnnl.goss.tutorial</groupId>
-  		<artifactId>tutorial-pmu-core</artifactId>
+  		<artifactId>tutorial-pmu-common</artifactId>
   		<version>0.0.1-SNAPSHOT</version>
   	</dependency>
   </dependencies>

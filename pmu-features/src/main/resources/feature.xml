@@ -4,7 +4,7 @@
     <feature name="tutorial-pmu-feature" version="${pom.version}">
     	<feature version="0.1.3-SNAPSHOT">goss-core-feature</feature>
  
-    	<bundle start-level="84" dependency="true">mvn:pnnl.goss.tutorial/tutorial-pmu-core/${pom.version}</bundle>
+    	<bundle start-level="84" dependency="true">mvn:pnnl.goss.tutorial/tutorial-pmu-common/${pom.version}</bundle>
     	<bundle start-level="84" dependency="true">mvn:pnnl.goss.tutorial/tutorial-pmu-web-ui/${pom.version}</bundle>    	    	
     	
     </feature>   
