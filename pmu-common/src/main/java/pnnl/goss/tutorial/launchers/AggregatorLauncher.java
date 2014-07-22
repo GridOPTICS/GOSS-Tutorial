@@ -9,8 +9,8 @@ import pnnl.goss.core.DataResponse;
 import pnnl.goss.core.Response;
 import pnnl.goss.core.client.Client;
 import pnnl.goss.core.client.GossClient;
-import pnnl.goss.core.client.GossResponseEvent;
 import pnnl.goss.core.client.GossClient.PROTOCOL;
+import pnnl.goss.core.client.GossResponseEvent;
 import pnnl.goss.tutorial.PMUAggregator;
 import pnnl.goss.tutorial.impl.PMUAggregatorImpl;
 
@@ -18,7 +18,7 @@ import pnnl.goss.tutorial.impl.PMUAggregatorImpl;
 @Component
 @Instantiate
 public class AggregatorLauncher extends Thread{
-	PMUAggregator aggregator;
+	PMUAggregator aggregator = new PMUAggregatorImpl(client);
 	private static Client client = new GossClient(new UsernamePasswordCredentials("pmu_user", "password"),PROTOCOL.STOMP);
 	private AggregatorLauncher launcher; 
 	private boolean running = false;
@@ -51,9 +51,13 @@ public class AggregatorLauncher extends Thread{
 			public void onMessage(Response response) {
 				String message = (String)((DataResponse)response).getData();
 				System.out.println("AGG GOT MESSAGE "+message);
-				if(message.contains("start agg") & running==false){
+				if(message.contains("start agg") && running==false){
 					launch();
 					running=true;
+				}
+				if(message.contains("stop agg") && running==true){
+					aggregator.stop();
+					running=false;
 				}
 			}
 		};
@@ -67,8 +71,6 @@ public class AggregatorLauncher extends Thread{
 		String pmu1Topic = "/topic/goss/tutorial/pmu/PMU_1";
 		String pmu2Topic = "/topic/goss/tutorial/pmu/PMU_2";
 		String outputTopic = "pmu/"+pmu1Id+"/"+pmu2Id+"/agg";
-		aggregator = new PMUAggregatorImpl(client);
 		aggregator.startCalculatePhaseAngleDifference(pmu1Topic, pmu2Topic, outputTopic);
-		
 	}
 }

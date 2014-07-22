@@ -9,21 +9,20 @@ import java.util.HashMap;
 import org.apache.felix.ipojo.annotations.Property;
 import org.apache.http.auth.UsernamePasswordCredentials;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-
 import pnnl.goss.core.DataResponse;
 import pnnl.goss.core.Response;
 import pnnl.goss.core.client.Client;
 import pnnl.goss.core.client.GossClient;
-import pnnl.goss.core.client.GossResponseEvent;
 import pnnl.goss.core.client.GossClient.PROTOCOL;
+import pnnl.goss.core.client.GossResponseEvent;
 import pnnl.goss.tutorial.PMUAggregator;
 import pnnl.goss.tutorial.datamodel.PMUPhaseAngleDiffData;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
 public class PMUAggregatorImpl implements PMUAggregator{
 
-	
 	final Client client;
 	
 	private String pmu1Topic;
@@ -31,21 +30,14 @@ public class PMUAggregatorImpl implements PMUAggregator{
 	private String outputTopic;
 	private static Client client1 = new GossClient(new UsernamePasswordCredentials("pmu_user", "password"),PROTOCOL.STOMP);
 	private static Client client2 = new GossClient(new UsernamePasswordCredentials("pmu_user", "password"),PROTOCOL.STOMP);
-	
-	
+	private volatile boolean isRunning = true;
 	
 	public PMUAggregatorImpl(@Property Client client){
 		this.client = client;
 	}
 	
 	private void publishDifference(Date date, Double value1, Double value2){
-		String timestamp = PMUPhaseAngleDiffData.DATE_FORMAT.format(date);
 		Double value = value1-value2;
-//		HashMap<String, String> map = new HashMap<String, String>();
-//		map.put(pmu1Topic, value1.toString());
-//		map.put(pmu2Topic, value2.toString());
-//		map.put(outputTopic, value.toString());
-//		map.put("timestamp", timestamp);
 		
 		PMUPhaseAngleDiffData data = new PMUPhaseAngleDiffData();
 		data.setPhasor1(value1);
@@ -57,10 +49,11 @@ public class PMUAggregatorImpl implements PMUAggregator{
 		String json = gson.toJson(data);
 		System.out.println("Publishing "+json+" to "+outputTopic);
 		client.publish(outputTopic, json);
-//		client.publish(outputTopic, map, RESPONSE_FORMAT.JSON);
+
 	}
 	
 	public void startCalculatePhaseAngleDifference(String topic1, String topic2, String outputTopic) {
+		isRunning = true;
 		pmu1Topic = topic1;
 		pmu2Topic = topic2;
 		this.outputTopic = outputTopic;
@@ -72,29 +65,32 @@ public class PMUAggregatorImpl implements PMUAggregator{
 			
 			@Override
 			public void run() {
-				// TODO Auto-generated method stub
 				GossResponseEvent event1  = new GossResponseEvent() {
 					
 					@Override
 					public void onMessage(Response response) {
-						String responseStr = ((DataResponse)response).getData().toString();
-						String args[] = responseStr.split(",");
-						Date date = null;
-						Double dblValue = null;
-						try {
-							date = PMUPhaseAngleDiffData.DATE_FORMAT.parse(args[0].trim());
-							dblValue = Double.parseDouble(args[2].trim());					
-							topic1Values.put(date, dblValue);
-						} catch (ParseException e) {
-							// TODO Auto-generated catch block
-							System.err.println("Could not parse date "+args[0]);
-							e.printStackTrace();
-						}
-						
-						if (date != null && topic2Values.containsKey(date)){
-							publishDifference(date, dblValue, topic2Values.get(date));
-							topic1Values.remove(date);
-							topic2Values.remove(date);
+						if(isRunning){
+							String responseStr = ((DataResponse)response).getData().toString();
+							String args[] = responseStr.split(",");
+							Date date = null;
+							Double dblValue = null;
+							try {
+								SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+								date = DATE_FORMAT.parse(args[0].trim());
+								dblValue = Double.parseDouble(args[1].trim());
+								topic1Values.put(date, dblValue);
+							} catch (ParseException e) {
+								System.err.println("Could not parse date "+args[0]);
+								e.printStackTrace();
+							} catch (Exception e) {
+								System.err.println("Exception in pmu 1 stream");
+								e.printStackTrace();
+							}
+							if (date != null && topic2Values.containsKey(date)){
+								publishDifference(date, dblValue, topic2Values.get(date));
+								topic1Values.remove(date);
+								topic2Values.remove(date);
+							}
 						}
 					}
 				};
@@ -111,17 +107,21 @@ public class PMUAggregatorImpl implements PMUAggregator{
 					
 					@Override
 					public void onMessage(Response response) {
+						if(isRunning){
 						String responseStr = ((DataResponse)response).getData().toString();
 						String args[] = responseStr.split(",");
 						Date date = null;
 						Double dblValue = null;
 						try {
-							date = PMUPhaseAngleDiffData.DATE_FORMAT.parse(args[0].trim());
-							dblValue = Double.parseDouble(args[1].trim());					
+							SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+							date = DATE_FORMAT.parse(args[0].trim());
+							dblValue = Double.parseDouble(args[1].trim());	
 							topic2Values.put(date, dblValue);
 						} catch (ParseException e) {
-							// TODO Auto-generated catch block
-							System.err.println("Could not parse date "+args[0]);
+							System.err.println("Could not parse date "+args[0].trim());
+							e.printStackTrace();
+						} catch (Exception e) {
+							System.err.println("Exception in pmu 2 stream");
 							e.printStackTrace();
 						}
 						
@@ -130,7 +130,7 @@ public class PMUAggregatorImpl implements PMUAggregator{
 							topic1Values.remove(date);
 							topic2Values.remove(date);
 						}
-						
+						}
 					}
 				};
 				
@@ -143,7 +143,11 @@ public class PMUAggregatorImpl implements PMUAggregator{
 		thread2.start();
 		
 	}
-
+	
+	public void stop(){
+		isRunning = false;
+	}
+	
 	public String getPmu1Topic() {
 		return pmu1Topic;
 	}
