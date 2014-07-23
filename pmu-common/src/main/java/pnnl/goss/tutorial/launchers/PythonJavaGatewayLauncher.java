@@ -5,6 +5,8 @@ import org.apache.felix.ipojo.annotations.Instantiate;
 import org.apache.felix.ipojo.annotations.Invalidate;
 import org.apache.felix.ipojo.annotations.Validate;
 
+import pnnl.goss.core.client.Client;
+import pnnl.goss.core.client.GossClient;
 import py4j.GatewayServer;
 
 //This is needed so that py4j can make java calls
@@ -13,6 +15,7 @@ import py4j.GatewayServer;
 public class PythonJavaGatewayLauncher extends Thread{
 
 	private static GatewayServer gatewayServer;
+	private Client client;
 	
 	@Validate
 	public void startLauncher(){
@@ -38,4 +41,16 @@ public class PythonJavaGatewayLauncher extends Thread{
 		gatewayServer.start();
 		System.out.println("Python-Java Gateway Server Started");
 	}
+	
+	
+	
+	public Client getClient(){
+		if(client==null){
+			client = new GossClient();
+		} 
+		
+		return client;
+	}
+	
+	
 }

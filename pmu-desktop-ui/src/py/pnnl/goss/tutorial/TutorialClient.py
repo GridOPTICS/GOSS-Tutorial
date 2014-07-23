@@ -12,14 +12,17 @@ from matplotlib.figure import Figure
 
 #import sys
 import tkinter as Tk
-
+import sys, traceback
 import stomp
 import json
 from py4j.java_gateway import JavaGateway
 gateway = JavaGateway()    
 gateway.launch_gateway
-client = gateway.jvm.pnnl.goss.core.client.GossClient()
 
+client = gateway.entry_point.getClient()
+
+stomp_server = 'localhost'
+stomp_port = 61613    
 agg_topic = '/topic/pmu/PMU_1/PMU_2/agg'
 username = 'pmu_user'
 pw = 'password'
@@ -118,7 +121,7 @@ def _monitor():
         
         #start connection
         
-        conn = stomp.Connection([('localhost',61613)])
+        conn = stomp.Connection([(stomp_server,stomp_port)])
         conn.set_listener('', StompListener())
         conn.start()
         conn.connect(username, pw)
