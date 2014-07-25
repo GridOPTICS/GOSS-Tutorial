@@ -74,7 +74,8 @@
 						<Bundle-Version>${project.version}</Bundle-Version>
 						<Export-Package>
 							pnnl.goss.tutorial.datamodel,
-							pnnl.goss.tutorial.request
+							pnnl.goss.tutorial.request,
+							pnnl.goss.handlers
 						</Export-Package>
 						<Import-Package>
 							org.apache.log4j; version="[1.2,1.3)";
