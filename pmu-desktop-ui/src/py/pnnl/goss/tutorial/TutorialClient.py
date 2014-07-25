@@ -27,6 +27,7 @@ agg_topic = '/topic/pmu/PMU_1/PMU_2/agg'
 username = 'pmu_user'
 pw = 'password'
 startDateStr = "2014-07-10 00:00:00.000"
+formatter = gateway.jvm.java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS")
 
 #values for the graph
 graphTimes = []
@@ -44,13 +45,11 @@ class StompListener(object):
             #Parse json message
             jdata = json.loads(message)
             timeStr = jdata['timestamp']
-            formatter = gateway.jvm.pnnl.goss.tutorial.datamodel.PMUPhaseAngleDiffData.DATE_FORMAT
             time = formatter.parse(timeStr)
             
             print(' uploading %s' % message)
             #Send to goss using client api
-            dataObj = gateway.jvm.pnnl.goss.tutorial.datamodel.PMUPhaseAngleDiffData(time, jdata['phasor1'], jdata['phasor2'], jdata['difference'])
-            uploadReq = gateway.jvm.pnnl.goss.core.UploadRequest(dataObj,"Tutorial")
+            uploadReq = gateway.entry_point.createUploadRequest(time, jdata['phasor1'], jdata['phasor2'], jdata['difference'],"Tutorial")
             client.getResponse(uploadReq)
             
             #Update last posted label
@@ -171,9 +170,8 @@ def _graph():
         canvas.get_tk_widget().pack(side=Tk.BOTTOM, fill=Tk.BOTH, expand=1, )
        
         #send request for graph data
-        formatter = gateway.jvm.pnnl.goss.tutorial.datamodel.PMUPhaseAngleDiffData.DATE_FORMAT
         startDate = formatter.parse(startDateStr)
-        dataRequest = gateway.jvm.pnnl.goss.tutorial.request.TutorialDownloadRequestSync(startDate)
+        dataRequest = gateway.entry_point.createDownloadRequest(startDate)
         print('Created Request')
         response = client.getResponse(dataRequest)
         data = response.getData()

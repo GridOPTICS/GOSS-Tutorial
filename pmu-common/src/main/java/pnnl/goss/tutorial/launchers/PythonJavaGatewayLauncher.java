@@ -1,12 +1,21 @@
 package pnnl.goss.tutorial.launchers;
 
+import java.io.Serializable;
+import java.text.DateFormat;
+import java.util.Date;
+
 import org.apache.felix.ipojo.annotations.Component;
 import org.apache.felix.ipojo.annotations.Instantiate;
 import org.apache.felix.ipojo.annotations.Invalidate;
 import org.apache.felix.ipojo.annotations.Validate;
 
+import pnnl.goss.core.Data;
+import pnnl.goss.core.Request;
+import pnnl.goss.core.UploadRequest;
 import pnnl.goss.core.client.Client;
 import pnnl.goss.core.client.GossClient;
+import pnnl.goss.tutorial.datamodel.PMUPhaseAngleDiffData;
+import pnnl.goss.tutorial.request.TutorialDownloadRequestSync;
 import py4j.GatewayServer;
 
 //This is needed so that py4j can make java calls
@@ -43,7 +52,7 @@ public class PythonJavaGatewayLauncher extends Thread{
 	}
 	
 	
-	
+	//Needed these because karaf was causing something to happen so python couldn't create them directly	
 	public Client getClient(){
 		if(client==null){
 			client = new GossClient();
@@ -51,6 +60,12 @@ public class PythonJavaGatewayLauncher extends Thread{
 		
 		return client;
 	}
-	
+	public UploadRequest createUploadRequest(Date timestamp, Double phasor1, Double phasor2, Double difference, String dataType){
+		Serializable data = new PMUPhaseAngleDiffData(timestamp, phasor1, phasor2, difference);
+		return new UploadRequest(data, dataType);
+	}
+	public Request createDownloadRequest(Date timestamp){
+		return new TutorialDownloadRequestSync(timestamp);
+	}
 	
 }

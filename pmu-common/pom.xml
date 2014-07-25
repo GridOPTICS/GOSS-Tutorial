@@ -73,7 +73,8 @@
 						<Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
 						<Bundle-Version>${project.version}</Bundle-Version>
 						<Export-Package>
-							pnnl.goss.tutorial
+							pnnl.goss.tutorial.datamodel,
+							pnnl.goss.tutorial.request
 						</Export-Package>
 						<Import-Package>
 							org.apache.log4j; version="[1.2,1.3)";
