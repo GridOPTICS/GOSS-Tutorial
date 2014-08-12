@@ -78,6 +78,7 @@ public class TutorialDesktopDownloadHandler extends GossRequestHandler {
 		try{
 			
 	//		SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+			//TODO
 			Connection connection = GOSSTutorialDataSource.getInstance().getConnection();
 			//System.out.println(connection);
 			Statement statement = connection.createStatement();

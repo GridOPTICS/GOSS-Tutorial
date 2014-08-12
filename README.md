@@ -34,7 +34,7 @@
 4. Start Karaf (with GOSS core included)
 	* cd ../GOSS/goss-karaf-assembly
 	* mvn clean compile
-	**TODO MAYBE COPY SOME CONFIG FILES AROUND?
+	**TODO MAYBE COPY SOME CONFIG FILES AROUND?  like the logging one
 	* start-karaf.bat
 	
 5. Register GOSS Tutorial
