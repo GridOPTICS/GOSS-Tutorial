@@ -6,11 +6,15 @@
 		<artifactId>tutorial-pmu</artifactId>
 		<version>0.0.1-SNAPSHOT</version>
 	</parent>
-	<artifactId>tutorial-pmu-common</artifactId>
-	<name>PMU Tutorial Common</name>
+	<artifactId>tutorial-pmu-server</artifactId>
+	<name>PMU Tutorial Server</name>
 	<packaging>bundle</packaging>
 
 	<dependencies>
+		<dependency>
+	 		<groupId>pnnl.goss.tutorial</groupId>
+	 		<artifactId>tutorial-pmu-common</artifactId>
+		 </dependency>
 		<dependency>
 	 		<groupId>pnnl.goss</groupId>
 	 		<artifactId>goss-core-server</artifactId>
@@ -73,8 +77,7 @@
 						<Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
 						<Bundle-Version>${project.version}</Bundle-Version>
 						<Export-Package>
-							pnnl.goss.tutorial.datamodel,
-							pnnl.goss.tutorial.request
+							pnnl.goss.tutorial.handlers
 						</Export-Package>
 						<Import-Package>
 							org.apache.log4j; version="[1.2,1.3)";

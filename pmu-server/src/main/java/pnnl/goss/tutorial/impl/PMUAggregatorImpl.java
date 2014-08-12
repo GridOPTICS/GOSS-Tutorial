@@ -1,6 +1,7 @@
 package pnnl.goss.tutorial.impl;
 
 
+import java.io.Serializable;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -68,7 +69,7 @@ public class PMUAggregatorImpl implements PMUAggregator{
 				GossResponseEvent event1  = new GossResponseEvent() {
 					
 					@Override
-					public void onMessage(Response response) {
+					public void onMessage(Serializable response) {
 						if(isRunning){
 							String responseStr = ((DataResponse)response).getData().toString();
 							String args[] = responseStr.split(",");
@@ -106,7 +107,7 @@ public class PMUAggregatorImpl implements PMUAggregator{
 				GossResponseEvent event2 = new GossResponseEvent() {
 					
 					@Override
-					public void onMessage(Response response) {
+					public void onMessage(Serializable response) {
 						if(isRunning){
 						String responseStr = ((DataResponse)response).getData().toString();
 						String args[] = responseStr.split(",");

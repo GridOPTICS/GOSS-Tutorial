@@ -42,58 +42,98 @@
     operated by BATTELLE for the UNITED STATES DEPARTMENT OF ENERGY
     under Contract DE-AC05-76RL01830
 */
-package pnnl.goss.utill;
+package pnnl.goss.tutorial.datasource;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Dictionary;
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.Properties;
 
-import pnnl.goss.datasource.GOSSTutorialDataSource;
+import org.apache.commons.dbcp.BasicDataSource;
+import org.apache.commons.dbcp.BasicDataSourceFactory;
 
-@SuppressWarnings("rawtypes")
-public class GOSSTutorialDBConfiguration {
-	/**
-	 * <p>
-	 * The configuration file in $SMX_HOME/etc will be CONFIG_PID.cfg
-	 * </p>
-	 */
-	public static final String CONFIG_PID = "pnnl.goss.tutorial.server";
-	private static Dictionary configProperties;
+import pnnl.goss.tutorial.util.GOSSTutorialDBConfiguration;
+
+public class GOSSTutorialDataSource {
+
+	private BasicDataSource connectionPool = null; 
+	private static GOSSTutorialDataSource instance;
 	
-	private static final String CONFIG_FILENAME = "/goss-tutorial-server.properties";
-	public static final String CONFIG_DB_URI = "databaseURI";
-	public static final String CONFIG_DB_USER = "databaseUser";
-	public static final String CONFIG_DB_PW = "databasePassword";
-	
-
-	public static String getProperty(String propertyName){
-		if(configProperties!=null){
-			return (String)configProperties.get(propertyName);
-		} else {
-			System.err.println("FusionDB server Configuration not found, loading from file");
-			Properties props = loadFromFile();
-			return props.getProperty(propertyName);
-		}
-		
-	}
-
-	public static void setConfigProperties(Dictionary props){
-		configProperties = props;
-	}
-	private static Properties loadFromFile(){
-		Properties configProperties = new Properties();
-		
-		// Grabs the config file from the resources path which is on the class path.
-		InputStream input = GOSSTutorialDataSource.class.getResourceAsStream(CONFIG_FILENAME);
-		try {
-			configProperties.load(input);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			System.err.println("Error occurred retreiving gridmw server config from file"+e);
+	private GOSSTutorialDataSource(){
+		try{
+			System.out.println("Connecting to GOSS Metadata store");
+			System.out.println("Using GOSS Metadata store at "+GOSSTutorialDBConfiguration.getProperty(GOSSTutorialDBConfiguration.CONFIG_DB_URI));
+			connectionPool = getDataSourceConnection(GOSSTutorialDBConfiguration.getProperty(GOSSTutorialDBConfiguration.CONFIG_DB_URI), GOSSTutorialDBConfiguration.getProperty(GOSSTutorialDBConfiguration.CONFIG_DB_USER),
+					GOSSTutorialDBConfiguration.getProperty(GOSSTutorialDBConfiguration.CONFIG_DB_PW), null);
+		}catch(Exception e){
 			e.printStackTrace();
 		}
-		
-		return configProperties;
 	}
+
+	public static void resetInstance(){
+		System.out.println("Resetting GridmwMappingDatasource Instance");
+		if(instance!=null){
+			try {
+				instance.connectionPool.close();
+			} catch (SQLException e) {
+				System.err.println("Error closing gridmw datasource connection");
+			}
+			instance = null;
+		}
+	}
+	
+	public static GOSSTutorialDataSource getInstance(){
+		try{
+			if(instance == null){
+				System.out.println("Creating new data store connection");
+				instance  = new GOSSTutorialDataSource();
+			}
+			return instance;
+		}
+		catch(Exception e){
+			e.printStackTrace();
+			return null;
+		}
+	}
+
+	public Connection getConnection(){
+		try{
+
+			return connectionPool.getConnection();
+		}
+		catch(SQLException e){
+			e.printStackTrace();
+			return null;
+		}
+	}
+
+	/**
+	 * <p>
+	 * Adds a poolable connection using the passed parameters to connect to the datasource.
+	 * </p>
+	 */
+	public BasicDataSource getDataSourceConnection(String url, String username, String password, String driver) throws Exception {
+		Properties properties = new Properties();
+
+		// Available properties http://commons.apache.org/proper/commons-dbcp/xref-test/org/apache/commons/dbcp/TestBasicDataSourceFactory.html#50
+		if (driver == null || driver.trim().equals("")){
+			properties.setProperty("driverClassName", "com.mysql.jdbc.Driver"); 
+		}
+		else{
+			properties.setProperty("driverClassName", driver);
+		}
+
+		Class.forName(properties.getProperty("driverClassName"));
+
+		properties.setProperty("url", url);
+		properties.setProperty("username", username);
+		properties.setProperty("password", password);
+
+		properties.setProperty("maxOpenPreparedStatements", "10");
+
+		System.out.println("Connecting datasource to url: "+url+" with user: "+username);
+
+		return (BasicDataSource)BasicDataSourceFactory.createDataSource(properties);
+
+	}
+
 }

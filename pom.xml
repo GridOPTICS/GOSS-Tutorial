@@ -8,13 +8,13 @@
 	<packaging>pom</packaging>
 	<modules>
 		<module>pmu-common</module>
+		<module>pmu-server</module>
 		<module>pmu-web-ui</module>
 		<module>pmu-desktop-ui</module>
-		<!--<module>pmu-tutorial-server</module>-->
         <module>pmu-features</module>
 	</modules>
 	<properties>
-		<goss.version>0.1.3-SNAPSHOT</goss.version>
+		<goss.version>0.1.4-SNAPSHOT</goss.version>
 		        
         <junit.version>4.11</junit.version>
         
@@ -24,6 +24,11 @@
 
 	<dependencyManagement>
 		<dependencies>
+			<dependency>
+	 			<groupId>pnnl.goss.tutorial</groupId>
+	 			<artifactId>tutorial-pmu-common</artifactId>
+	 			<version>${project.version}</version>
+		 	</dependency>
 			<dependency>
 				<groupId>pnnl.goss</groupId>
 				<artifactId>goss-core-server</artifactId>

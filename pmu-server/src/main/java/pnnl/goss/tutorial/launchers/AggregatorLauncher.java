@@ -1,4 +1,6 @@
 package pnnl.goss.tutorial.launchers;
+import java.io.Serializable;
+
 import org.apache.felix.ipojo.annotations.Component;
 import org.apache.felix.ipojo.annotations.Instantiate;
 import org.apache.felix.ipojo.annotations.Invalidate;
@@ -48,7 +50,7 @@ public class AggregatorLauncher extends Thread{
 	public void run() {
 		System.out.println("CREATE AGGREGATOR LAUNCHER");
 		GossResponseEvent event = new GossResponseEvent() {
-			public void onMessage(Response response) {
+			public void onMessage(Serializable response) {
 				String message = (String)((DataResponse)response).getData();
 				System.out.println("AGG GOT MESSAGE "+message);
 				if(message.contains("start agg") && running==false){

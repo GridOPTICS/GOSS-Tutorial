@@ -60,7 +60,7 @@ public class DownloadLauncher {
 						TutorialDownloadRequestAsync request = new TutorialDownloadRequestAsync(1, 1270105200, 1000, startDate);
 						request.setFrequency(1000);
 						GossResponseEvent event = new GossResponseEvent() {
-							public void onMessage(Response response) {
+							public void onMessage(Serializable response) {
 								DataResponse dataresponse=null;
 								try{
 									dataresponse = (DataResponse)response;

@@ -1,4 +1,4 @@
-package pnnl.goss.handlers;
+package pnnl.goss.tutorial.handlers;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -20,11 +20,11 @@ import pnnl.goss.core.Response;
 import pnnl.goss.core.client.Client;
 import pnnl.goss.core.client.GossClient;
 import pnnl.goss.core.client.GossClient.PROTOCOL;
-import pnnl.goss.datasource.GOSSTutorialDataSource;
 import pnnl.goss.tutorial.request.TutorialDownloadRequestAsync;
 import pnnl.goss.tutorial.request.TutorialDownloadRequestSync;
 import pnnl.goss.server.core.GossRequestHandler;
 import pnnl.goss.tutorial.datamodel.PMUPhaseAngleDiffData;
+import pnnl.goss.tutorial.datasource.GOSSTutorialDataSource;
 
 public class TutorialDesktopDownloadHandler extends GossRequestHandler {
 

@@ -1,4 +1,5 @@
 package pnnl.goss.tutorial.launchers;
+import java.io.Serializable;
 import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -54,7 +55,7 @@ public class GeneratorLauncher extends Thread {
 	public void run() {
 		System.out.println("CREATE GENERATOR LAUNCHER");
 		GossResponseEvent event = new GossResponseEvent() {
-			public void onMessage(Response response) {
+			public void onMessage(Serializable response) {
 				String message = (String)((DataResponse)response).getData(); 
 				System.out.println("GEN GOT MESSAGE "+message);
 				if(message.contains("start pmu") && running==false){
