@@ -49,7 +49,7 @@ public class PMUAggregatorImpl implements PMUAggregator{
 		
 		String json = gson.toJson(data);
 		System.out.println("Publishing "+json+" to "+outputTopic);
-		client.publish(outputTopic, json);
+		client.publishString(outputTopic, json);
 
 	}
 	

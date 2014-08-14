@@ -108,5 +108,13 @@ public class FakeClient implements Client {
 		}
 	}
 
-
+	@Override
+	public void publishString(String topicName, String data
+			) throws NullPointerException {
+		pubSubResponeCache.put(topicName, data);
+		if (isSubscribed(topicName)){
+			topicEvent.get(topicName).onMessage(new DataResponse(data));
+		}
+		
+	}
 }

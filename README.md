@@ -34,7 +34,7 @@
 4. Start Karaf (with GOSS core included)
 	* cd ../GOSS/goss-karaf-assembly
 	* mvn clean compile
-	**TODO MAYBE COPY SOME CONFIG FILES AROUND?  like the logging one
+	* copy src/main/resources/org.ops4j.pax.logging.cfg into target/assembly/etc/  and update the pnnl.goss.core.cfg and pnnl.goss.datasoruces.cfg as needed in that same etc/ directory
 	* start-karaf.bat
 	
 5. Register GOSS Tutorial

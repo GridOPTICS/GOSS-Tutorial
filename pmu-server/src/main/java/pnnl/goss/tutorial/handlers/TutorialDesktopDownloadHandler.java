@@ -7,24 +7,19 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import org.apache.http.auth.UsernamePasswordCredentials;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
-import pnnl.goss.core.DataError;
 import pnnl.goss.core.DataResponse;
 import pnnl.goss.core.Request;
 import pnnl.goss.core.RequestAsync;
 import pnnl.goss.core.Response;
-import pnnl.goss.core.client.Client;
-import pnnl.goss.core.client.GossClient;
-import pnnl.goss.core.client.GossClient.PROTOCOL;
 import pnnl.goss.tutorial.request.TutorialDownloadRequestAsync;
 import pnnl.goss.tutorial.request.TutorialDownloadRequestSync;
 import pnnl.goss.server.core.GossRequestHandler;
 import pnnl.goss.tutorial.datamodel.PMUPhaseAngleDiffData;
-import pnnl.goss.tutorial.datasource.GOSSTutorialDataSource;
+import static pnnl.goss.tutorial.launchers.PMUTutorialActivator.PROP_TUTORIALDB_DATASERVICE;
 
 public class TutorialDesktopDownloadHandler extends GossRequestHandler {
 
@@ -79,8 +74,9 @@ public class TutorialDesktopDownloadHandler extends GossRequestHandler {
 			
 	//		SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
 			//TODO
-			Connection connection = GOSSTutorialDataSource.getInstance().getConnection();
+//			Connection connection = GOSSTutorialDataSource.getInstance().getConnection();
 			//System.out.println(connection);
+			Connection connection = this.dataservices.getPooledConnection(PROP_TUTORIALDB_DATASERVICE);
 			Statement statement = connection.createStatement();
 			
 			String time = PMUPhaseAngleDiffData.DATE_FORMAT.format(startDate);

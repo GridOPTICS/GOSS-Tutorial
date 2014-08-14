@@ -2,6 +2,7 @@ package pnnl.goss.tutorial.launchers;
 
 import java.util.Dictionary;
 
+import org.apache.commons.dbcp.BasicDataSource;
 import org.apache.felix.ipojo.annotations.Component;
 import org.apache.felix.ipojo.annotations.Instantiate;
 import org.apache.felix.ipojo.annotations.Invalidate;
@@ -71,11 +72,21 @@ public class PMUTutorialActivator {
 					datasourceCreator = new BasicDataSourceCreator();
 				}
 				if (datasourceCreator != null){
-					try {
-						dataServices.registerData(PROP_TUTORIALDB_DATASERVICE,
-								datasourceCreator.create(uri, user, password));
-					} catch (Exception e) {
-						log.error(e.getMessage(), e);
+					if(uri!=null){
+						try {
+							BasicDataSource dataSource =datasourceCreator.create(uri, user, password);
+							if(dataSource!=null){
+							
+							dataServices.registerData(PROP_TUTORIALDB_DATASERVICE,
+									dataSource);
+							} else {
+								log.warn("Data source not created for uri "+uri+" and user "+user);
+							}
+						} catch (Exception e) {
+							log.error(e.getMessage(), e);
+						}
+					} else {
+						log.warn("Could not create datasource, uri is null!");
 					}
 				}
 				else{

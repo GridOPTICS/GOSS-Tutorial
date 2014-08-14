@@ -30,7 +30,7 @@ public class PMUGeneratorImpl implements PMUGenerator{
 	
 	private void publishNext(){
 		String item = data.poll();		
-		this.client.publish(outputTopic, item);		
+		this.client.publishString(outputTopic, item);		
 	}
 	
 //	public PMUGeneratorImpl(@Property Client client, boolean autoGen){

@@ -1,4 +1,5 @@
 package pnnl.goss.tutorial.launchers;
+
 import java.io.Serializable;
 import java.text.DecimalFormat;
 import java.text.ParseException;
@@ -10,15 +11,16 @@ import java.util.Random;
 import org.apache.felix.ipojo.annotations.Component;
 import org.apache.felix.ipojo.annotations.Instantiate;
 import org.apache.felix.ipojo.annotations.Invalidate;
+import org.apache.felix.ipojo.annotations.Requires;
 import org.apache.felix.ipojo.annotations.Validate;
-import org.apache.http.auth.UsernamePasswordCredentials;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import pnnl.goss.core.DataResponse;
-import pnnl.goss.core.Response;
-import pnnl.goss.core.client.Client;
 import pnnl.goss.core.client.GossClient;
 import pnnl.goss.core.client.GossClient.PROTOCOL;
 import pnnl.goss.core.client.GossResponseEvent;
+import pnnl.goss.server.core.GossRequestHandlerRegistrationService;
 import pnnl.goss.tutorial.PMUGenerator;
 import pnnl.goss.tutorial.impl.PMUGeneratorImpl;
 
@@ -27,37 +29,62 @@ import pnnl.goss.tutorial.impl.PMUGeneratorImpl;
 public class GeneratorLauncher extends Thread {
 	private PMUGenerator generator1;
 	private PMUGenerator generator2;
-	private static Client client = new GossClient(new UsernamePasswordCredentials("pmu_user", "password"),PROTOCOL.STOMP);
+	GossClient client = null; 
+//	private static Client client = new GossClient(new UsernamePasswordCredentials("pmu_user", "password"),PROTOCOL.STOMP);
 	private boolean running = false;
+	
+	private static Logger log = LoggerFactory
+			.getLogger(GeneratorLauncher.class);
+	private volatile GossRequestHandlerRegistrationService registrationService;
+	
 	private GeneratorLauncher launcher;
-	public static void main(String[] args){
-		
-		new GeneratorLauncher().startLauncher();
-		
+//	public static void main(String[] args){
+//		
+//		new GeneratorLauncher().startLauncher();
+//		
+//	}
+	
+	public GeneratorLauncher(@Requires GossRequestHandlerRegistrationService registrationService){
+		try{
+			log.debug("Creating Generator Launcher "+registrationService);
+			if(registrationService!=null && registrationService.getCoreServerConfig()!=null){
+
+				this.registrationService = registrationService;
+				client = new GossClient(PROTOCOL.STOMP);
+				log.debug("CoreServerConfig "+this.registrationService.getCoreServerConfig());
+				client.setConfiguration(this.registrationService.getCoreServerConfig());
+			} else {
+				log.error("Generator received null core server config");
+			}
+		}catch(Exception e){
+			log.error("Failing while creating generator launcher", e);
+		}
 	}
 	
 	@Validate
 	public void startLauncher(){
-	
+		log.debug("Starting Generator Launcher");
 		if(launcher==null){
-			launcher = new GeneratorLauncher();
+			launcher = new GeneratorLauncher(this.registrationService);
 			launcher.start();
 		}
 	}
 	
 	@Invalidate
 	public void stopLauncher(){
+		log.debug("Stopping Generator Launcher");
 		launcher.stop();
 		launcher=null;
 	}
 	
 	@Override
 	public void run() {
-		System.out.println("CREATE GENERATOR LAUNCHER");
+		log.debug("Creating Tutorial Generator Launcher");
+		
 		GossResponseEvent event = new GossResponseEvent() {
 			public void onMessage(Serializable response) {
 				String message = (String)((DataResponse)response).getData(); 
-				System.out.println("GEN GOT MESSAGE "+message);
+				log.debug("Generator received message "+message);
 				if(message.contains("start pmu") && running==false){
 					launch();
 					running = true;
@@ -136,8 +163,7 @@ public class GeneratorLauncher extends Thread {
 		
 		}
 		catch(ParseException pe){
-			System.out.println("PMU stream date is not in the correct format");
-			pe.printStackTrace();
+			log.error("PMU stream date is not in the correct format", pe);
 		}
 	}
 	

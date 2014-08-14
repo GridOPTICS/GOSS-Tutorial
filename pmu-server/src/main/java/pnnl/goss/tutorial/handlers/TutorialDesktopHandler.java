@@ -9,8 +9,7 @@ import pnnl.goss.core.UploadRequest;
 import pnnl.goss.core.UploadResponse;
 import pnnl.goss.server.core.GossRequestHandler;
 import pnnl.goss.tutorial.datamodel.PMUPhaseAngleDiffData;
-import pnnl.goss.tutorial.datasource.GOSSTutorialDataSource;
-
+import static pnnl.goss.tutorial.launchers.PMUTutorialActivator.PROP_TUTORIALDB_DATASERVICE;
 public class TutorialDesktopHandler extends GossRequestHandler{
 	
 public UploadResponse handle(Request request) {
@@ -20,8 +19,10 @@ public UploadResponse handle(Request request) {
 		try{
 			UploadRequest uploadrequest = (UploadRequest)request;
 			SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
-			Connection connection = GOSSTutorialDataSource.getInstance().getConnection();
-			System.out.println(connection);
+			
+			Connection connection = this.dataservices.getPooledConnection(PROP_TUTORIALDB_DATASERVICE);
+//			Connection connection = GOSSTutorialDataSource.getInstance().getConnection();
+//			System.out.println(connection);
 			Statement statement = connection.createStatement();
 			
 			PMUPhaseAngleDiffData data = (PMUPhaseAngleDiffData)uploadrequest.getData();

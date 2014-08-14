@@ -76,8 +76,8 @@ public class PMUAggregatorTests {
 		});
 		
 		
-		fakeClient.publish(topic1, "2014-06-16 12:23:01,59.3");
-		fakeClient.publish(topic2, "2014-06-16 12:23:01,5");
+		fakeClient.publishString(topic1, "2014-06-16 12:23:01,59.3");
+		fakeClient.publishString(topic2, "2014-06-16 12:23:01,5");
 		Assert.assertEquals(1, wasHit.size());
 		
 		
