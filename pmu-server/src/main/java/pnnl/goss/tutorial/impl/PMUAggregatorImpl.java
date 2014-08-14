@@ -8,13 +8,9 @@ import java.util.Date;
 import java.util.HashMap;
 
 import org.apache.felix.ipojo.annotations.Property;
-import org.apache.http.auth.UsernamePasswordCredentials;
 
 import pnnl.goss.core.DataResponse;
-import pnnl.goss.core.Response;
 import pnnl.goss.core.client.Client;
-import pnnl.goss.core.client.GossClient;
-import pnnl.goss.core.client.GossClient.PROTOCOL;
 import pnnl.goss.core.client.GossResponseEvent;
 import pnnl.goss.tutorial.PMUAggregator;
 import pnnl.goss.tutorial.datamodel.PMUPhaseAngleDiffData;
@@ -29,8 +25,8 @@ public class PMUAggregatorImpl implements PMUAggregator{
 	private String pmu1Topic;
 	private String pmu2Topic;
 	private String outputTopic;
-	private static Client client1 = new GossClient(new UsernamePasswordCredentials("pmu_user", "password"),PROTOCOL.STOMP);
-	private static Client client2 = new GossClient(new UsernamePasswordCredentials("pmu_user", "password"),PROTOCOL.STOMP);
+//	private static Client client1 = new GossClient(new UsernamePasswordCredentials("pmu_user", "password"),PROTOCOL.STOMP);
+//	private static Client client2 = new GossClient(new UsernamePasswordCredentials("pmu_user", "password"),PROTOCOL.STOMP);
 	private volatile boolean isRunning = true;
 	
 	public PMUAggregatorImpl(@Property Client client){
@@ -95,7 +91,7 @@ public class PMUAggregatorImpl implements PMUAggregator{
 						}
 					}
 				};
-				client1.subscribeTo(pmu1Topic, event1);
+				client.subscribeTo(pmu1Topic, event1);
 				
 			}
 		});
@@ -135,7 +131,7 @@ public class PMUAggregatorImpl implements PMUAggregator{
 					}
 				};
 				
-				client2.subscribeTo(pmu2Topic, event2);
+				client.subscribeTo(pmu2Topic, event2);
 				
 			}
 		});

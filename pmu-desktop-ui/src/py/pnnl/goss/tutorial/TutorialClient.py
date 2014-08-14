@@ -22,7 +22,7 @@ gateway.launch_gateway
 client = gateway.entry_point.getClient()
 
 stomp_server = 'localhost'
-stomp_port = 61613    
+stomp_port = 61612    
 agg_topic = '/topic/pmu/PMU_1/PMU_2/agg'
 username = 'pmu_user'
 pw = 'password'
@@ -50,7 +50,9 @@ class StompListener(object):
             print(' uploading %s' % message)
             #Send to goss using client api
             uploadReq = gateway.entry_point.createUploadRequest(time, jdata['phasor1'], jdata['phasor2'], jdata['difference'],"Tutorial")
+            print(uploadReq)            
             client.getResponse(uploadReq)
+            print('after upload')
             
             #Update last posted label
             newLabel = str(time)+", "+str(jdata['phasor1'])+", "+str(jdata['phasor2'])+", "+str(jdata['difference'])
