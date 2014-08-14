@@ -38,7 +38,7 @@ public class PythonJavaGatewayLauncher extends Thread{
 		try{
 			log.debug("Creating python gateway Launcher: registration service "+registrationService);
 			this.registrationService = registrationService;
-			client = new GossClient(PROTOCOL.STOMP);
+			client = new GossClient(PROTOCOL.OPENWIRE);
 			client.setConfiguration(this.registrationService.getCoreServerConfig());
 		}catch(Exception e){
 			log.error("Failing while creating python gateway launcher", e);
