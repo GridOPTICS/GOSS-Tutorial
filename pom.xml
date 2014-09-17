@@ -14,7 +14,7 @@
         <module>pmu-features</module>
 	</modules>
 	<properties>
-		<goss.version>0.1.4-SNAPSHOT</goss.version>
+		<goss.version>0.1.5-SNAPSHOT</goss.version>
 		        
         <junit.version>4.11</junit.version>
         
