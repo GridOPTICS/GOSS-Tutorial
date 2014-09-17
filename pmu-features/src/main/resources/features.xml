@@ -2,7 +2,7 @@
 <features xmlns="http://karaf.apache.org/xmlns/features/v1.2.0" name="${pom.artifactId}" >
 
     <feature name="tutorial-pmu-feature" version="${pom.version}" resolver="(obr)">
-    	<feature version="0.1.4-SNAPSHOT">goss-core-feature</feature>
+    	<feature version="${goss.version}">goss-core-feature</feature>
  
     	<bundle start-level="95" dependency="true">mvn:pnnl.goss.tutorial/tutorial-pmu-common/${pom.version}</bundle>
     	<bundle start-level="96" dependency="true">mvn:pnnl.goss.tutorial/tutorial-pmu-server/${pom.version}</bundle>
