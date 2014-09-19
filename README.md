@@ -2,16 +2,18 @@
 
 #### Presented at the _3rd Workshop on Next-Generation Analytics for the Future Power Grid_ July 16th 2014
 
+Assumed installed software: a Git client and Maven 
+
 For the following instructions $ROOT will be ~/git in linux, %USERPROFILE%\git on windows.  For the rest of the tutorial / will be used as the default path separator.  This tutorial assumes that $ROOT exists.  The [] brackets are used when a file extension is necessary for windows .bat files.
 
 1. Open a Terminal (cmd) window and change the working directory to $ROOT
 	* git clone https://github.com/GridOPTICS/GOSS-Tutorial.git
 	* git clone https://github.com/GridOPTICS/GOSS.git
 
-2. Modify the goss.properties file in $ROOT/GOSS the root of the GOSS repository to fit your connection criteria.
+2. Modify the goss.properties file in $ROOT/GOSS the root of the GOSS repository to fit your connection criteria.  As we expect this tutorial to be done on your local environment we expect no changes to this file. 
 	* Currently this file has non-sensitive password and connection data.
 
-3. Copy $ROOT/goss.properties file to ~/.goss/goss.properties
+3. Copy $ROOT/goss.properties file to ~/.goss/goss.properties.  This done using the following command.
 	* execute $ROOT/copy-props[.bat]
 
 4. Build GOSS and GOSS-Tutorial via maven
