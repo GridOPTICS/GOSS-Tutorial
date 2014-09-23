@@ -4,7 +4,7 @@
 	<artifactId>tutorial-pmu-features</artifactId>
 	<parent>
 		<artifactId>tutorial-pmu</artifactId>
-		<groupId>pnnl.goss.tutorial</groupId>
+		<version>0.0.2-SNAPSHOT</version>
 		<version>0.0.2-SNAPSHOT</version>
 	</parent>
 	

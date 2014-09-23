@@ -11,7 +11,7 @@
   	<dependency>
 		<groupId>pnnl.goss</groupId>
 		<artifactId>goss-core-client</artifactId>
-		<version>0.1.4-SNAPSHOT</version>
+		<version>${goss.version}</version>
 		<type>jar</type>
 	</dependency>
   	<dependency>
