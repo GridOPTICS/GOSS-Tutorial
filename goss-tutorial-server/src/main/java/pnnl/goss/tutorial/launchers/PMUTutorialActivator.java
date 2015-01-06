@@ -12,9 +12,9 @@ import org.apache.felix.ipojo.annotations.Validate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import pnnl.goss.server.core.BasicDataSourceCreator;
 import pnnl.goss.server.core.GossDataServices;
 import pnnl.goss.server.core.GossRequestHandlerRegistrationService;
+import pnnl.goss.server.core.internal.BasicDataSourceCreator;
 import pnnl.goss.tutorial.handlers.TutorialDesktopDownloadHandler;
 import pnnl.goss.tutorial.handlers.TutorialDesktopHandler;
 import pnnl.goss.tutorial.request.TutorialDownloadRequestAsync;
