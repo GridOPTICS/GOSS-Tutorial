@@ -1,0 +1,18 @@
+dependencies {
+    compile "pnnl.goss:goss-core-server:${gossCoreVersion}"
+    compile "pnnl.goss:goss-core-client:${gossCoreVersion}"
+    compile "com.google.code.gson:gson:${gsonVersion}"
+}
+
+jar{
+    manifest {
+        instruction 'Export-Package', 	'pnnl.goss.tutorial.datamodel',
+                            'pnnl.goss.tutorial.request',
+                            'pnnl.goss.tutorial.response',
+                            'pnnl.goss.tutorial'
+    }
+
+    [compileJava, compileTestJava, javadoc]*.options*.encoding = 'UTF-8'
+
+    apply plugin: 'pnnl.goss.ipojoize'
+}

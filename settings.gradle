@@ -1,0 +1,17 @@
+// These are the properties that are in this feature set.
+include 'goss-tutorial-common',
+        'goss-tutorial-desktop-ui',
+        'goss-tutorial-server',
+        'goss-tutorial-web-ui'
+
+
+// This is goss rather than goss-core because it is the root of the
+// tree and there is a goss-core defined already.
+rootProject.name = 'goss-tutorial-feature'
+
+// loop over the sub-projects declared above.
+rootProject.children.each {
+    // The build file for each of the children is the original name.gradle without
+    // the goss- prefix.
+    it.buildFileName = it.name + '.gradle' - 'goss-'
+}
