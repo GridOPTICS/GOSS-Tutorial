@@ -36,4 +36,7 @@ local.properties
 # TeXlipse plugin
 .texlipse
 dependencies.xml
-/build/
+/buildSrc/build/
+goss-tutorial-common/build/
+goss-tutorial-server/build/
+goss-karaf files/
