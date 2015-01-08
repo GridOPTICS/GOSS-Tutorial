@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<features xmlns="http://karaf.apache.org/xmlns/features/v1.2.0" name="@project.name@-@project.version@" >
+
+    <feature name="tutorial-pmu-feature" version="@project.version@" resolver="(obr)">
+        <feature version="@gossCoreVersion@">goss-core-feature</feature>
+
+        <bundle start-level="95" dependency="true">mvn:pnnl.goss.tutorial/tutorial-common/@project.version@</bundle>
+        <bundle start-level="96" dependency="true">mvn:pnnl.goss.tutorial/tutorial-server/@project.version@</bundle>
+        <bundle start-level="97" dependency="true">mvn:pnnl.goss.tutorial/tutorial-web-ui/@project.version@</bundle>
+
+    </feature>
+</features>
