@@ -1,2 +1,2 @@
-cp -f config/karaf/etc/org.ops4j.pax.logging.cfg target/assembly/etc/org.ops4j.pax.logging.cfg
+cp -f karaf/etc/org.ops4j.pax.logging.cfg target/assembly/etc/org.ops4j.pax.logging.cfg
 $SHELL target/assembly/bin/karaf debug
