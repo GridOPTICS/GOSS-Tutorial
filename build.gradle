@@ -3,6 +3,7 @@ buildscript {
         mavenLocal()
         jcenter()
         maven{url "http://dl.bintray.com/gridoptics/GOSS"}
+        maven{url "http://dl.bintray.com/gridoptics/goss"}
         dependencies {
             // Plugin for publishing to bintray for releases.
             classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.0'
