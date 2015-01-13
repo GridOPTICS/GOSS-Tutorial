@@ -1,0 +1,5 @@
+dependencies {
+    compile project(":goss-tutorial-common")
+    compile "pnnl.goss:goss-core-client:${gossCoreVersion}"
+
+}

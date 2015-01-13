@@ -24,8 +24,6 @@ public class PMUAggregatorImpl implements PMUAggregator{
     private String pmu1Topic;
     private String pmu2Topic;
     private String outputTopic;
-//	private static Client client1 = new GossClient(new UsernamePasswordCredentials("pmu_user", "password"),PROTOCOL.STOMP);
-//	private static Client client2 = new GossClient(new UsernamePasswordCredentials("pmu_user", "password"),PROTOCOL.STOMP);
     private volatile boolean isRunning = true;
 
     public PMUAggregatorImpl(Client client){

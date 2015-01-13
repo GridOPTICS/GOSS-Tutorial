@@ -6,11 +6,13 @@ import java.util.HashMap;
 import javax.jms.IllegalStateException;
 import javax.jms.JMSException;
 
+import org.apache.http.auth.Credentials;
+
 import pnnl.goss.core.DataResponse;
 import pnnl.goss.core.Request;
 import pnnl.goss.core.Request.RESPONSE_FORMAT;
-import pnnl.goss.core.client.Client;
-import pnnl.goss.core.client.GossResponseEvent;
+import pnnl.goss.core.Client;
+import pnnl.goss.core.GossResponseEvent;
 
 public class FakeClient implements Client {
 
@@ -115,5 +117,23 @@ public class FakeClient implements Client {
             topicEvent.get(topicName).onMessage(new DataResponse(data));
         }
 
+    }
+
+    @Override
+    public void setCredentials(Credentials credentials) {
+        // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public void setProtocol(PROTOCOL protocol) {
+        // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public PROTOCOL getProtocol() {
+        // TODO Auto-generated method stub
+        return null;
     }
 }

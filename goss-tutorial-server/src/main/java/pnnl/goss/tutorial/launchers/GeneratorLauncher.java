@@ -24,13 +24,9 @@ public class GeneratorLauncher implements GossResponseEvent, Runnable {
 
     private static Logger log = LoggerFactory.getLogger(GeneratorLauncher.class);
     private volatile Client client;
-    private boolean running = false;
+    private volatile boolean running = false;
     private PMUGenerator generator1;
     private PMUGenerator generator2;
-
-    public GeneratorLauncher() {
-        log.debug("Contructing!");
-    }
 
     public GeneratorLauncher(Client client){
         log.debug("Constructing with client!");
@@ -74,19 +70,6 @@ public class GeneratorLauncher implements GossResponseEvent, Runnable {
         }
         setupControlChannel();
         createGenerators();
-        int times=0;
-
-        while (running){
-
-            try {
-                System.out.println("running!");
-                Thread.sleep(5000);
-            } catch (InterruptedException e) {
-                log.debug("Thread interupted.");
-                running=false;
-            }
-        }
-
     }
 
     public void stopLauncher(){
