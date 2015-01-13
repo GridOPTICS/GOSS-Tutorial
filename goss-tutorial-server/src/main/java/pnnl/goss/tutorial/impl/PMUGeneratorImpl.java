@@ -1,107 +1,131 @@
 package pnnl.goss.tutorial.impl;
 
-import java.io.File;
 import java.util.List;
 import java.util.Queue;
-import java.util.Stack;
 import java.util.concurrent.LinkedBlockingDeque;
 
-import org.apache.felix.ipojo.annotations.Property;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import pnnl.goss.core.client.Client;
-import pnnl.goss.tutorial.PMUGenerator;
+import pnnl.goss.core.Client;
+import pnnl.goss.tutorial.common.PMUGenerator;
 
 public class PMUGeneratorImpl implements PMUGenerator{
-	
-	private final Client client;
-	private Queue<String> data;
-	private String outputTopic;
-	
-	private boolean isRunning = false;
-	private String pmuId;
-	private int itemsPerInterval;
-	private double intervalSeconds;
-		
-	public PMUGeneratorImpl(@Property Client client, List<String> data){
-		this.client = client;
-		this.data = new LinkedBlockingDeque<String>();
-		this.data.addAll(data);
-	}
-	
-	private void publishNext(){
-		String item = data.poll();		
-		this.client.publishString(outputTopic, item);		
-	}
-	
-//	public PMUGeneratorImpl(@Property Client client, boolean autoGen){
-//		this.client = client;
-//		
-//	}
-//	
-//	public PMUGeneratorImpl(@Property Client client, File file){
-//		this.client = client;
-//	}
+    private static Logger log = LoggerFactory.getLogger(PMUGeneratorImpl.class);
 
-	@Override
-	public void start(String pmuId, String outputTopic, final int itemsPerIterval, final double intervalSeconds) {
-		this.isRunning = true;
-		this.pmuId = pmuId;
-		this.itemsPerInterval = itemsPerIterval;
-		this.intervalSeconds = intervalSeconds;
-		this.outputTopic = outputTopic;
-				
-		Thread thread = new Thread(){
-			public void run(){
-				
-				while(isRunning){
-					for(int i=0;i<itemsPerIterval && !data.isEmpty(); i++){
-						publishNext();
-					}
-					
-					try {
-						Thread.sleep((int)(intervalSeconds*1000));
-					} catch (InterruptedException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-					
-				}
-			}
-		};
-		
-		thread.start();
-		
-	}
+    private List<String> data;
+    private Queue<String> queue;
+    private String outputTopic;
+    private Client client;
 
-	@Override
-	public void stop() {
-		isRunning = false;
-	}
+    private boolean isRunning = false;
+    private String pmuId;
+    private int itemsPerInterval;
+    private double intervalSeconds;
 
-	@Override
-	public boolean isRunning() {
-		return isRunning;
-	}
+    public void setClient(Client client){
+        this.client = client;
+    }
 
-	@Override
-	public String getPMUId() {
-		return pmuId;
-	}
+    public PMUGeneratorImpl(Client client){
 
-	@Override
-	public int getNumPublishedItemsPerInterval() {
-		return itemsPerInterval;
-	}
+        if (client == null) {
+            log.debug("Null client passed!");
+            throw new IllegalArgumentException("Invalid client speecified!");
+        }
+        this.client = client;
+        log.debug("Client is: "+client.toString());
+    }
 
-	@Override
-	public String getOutputTopic() {
-		return outputTopic;
-	}
+    public PMUGeneratorImpl(Client client, List<String> data){
+        this.client = client;
+        this.data = data;
+    }
 
-	@Override
-	public double getIntervalSeconds() {
-		return intervalSeconds;
-	}
+    private synchronized void publishNext(){
+        String item = queue.poll();
 
-	
+        log.debug("publishing next: "+outputTopic+" " + item);
+        this.client.publishString(outputTopic, item);
+    }
+
+    private void createQueue(){
+        this.queue = new LinkedBlockingDeque<String>();
+        this.queue.addAll(data);
+    }
+
+    @Override
+    public void start(String pmuId, String outputTopic, final int itemsPerIterval, final double intervalSeconds) {
+        if (client == null){
+            throw new IllegalStateException("Invalid client reference!");
+        }
+        if (data == null){
+            throw new IllegalStateException("Invalid data specified");
+        }
+
+        log.debug("Starting generation for pmu: "+pmuId);
+        log.debug("Output topic: "+outputTopic);
+        this.isRunning = true;
+        this.pmuId = pmuId;
+        this.itemsPerInterval = itemsPerIterval;
+        this.intervalSeconds = intervalSeconds;
+        this.outputTopic = outputTopic;
+        createQueue();
+
+        Thread thread = new Thread(){
+            public void run(){
+
+                while(isRunning){
+                    for(int i=0;i<itemsPerIterval && !queue.isEmpty(); i++){
+                        publishNext();
+                    }
+
+                    try {
+                        Thread.sleep((int)(intervalSeconds*1000));
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+
+                }
+            }
+        };
+
+        thread.start();
+
+    }
+
+    @Override
+    public void stop() {
+        isRunning = false;
+    }
+
+    @Override
+    public boolean isRunning() {
+        return isRunning;
+    }
+
+    @Override
+    public String getPMUId() {
+        return pmuId;
+    }
+
+    @Override
+    public int getNumPublishedItemsPerInterval() {
+        return itemsPerInterval;
+    }
+
+    @Override
+    public String getOutputTopic() {
+        return outputTopic;
+    }
+
+    @Override
+    public double getIntervalSeconds() {
+        return intervalSeconds;
+    }
+
+    @Override
+    public void setData(List<String> data) {
+        this.data = data;
+    }
 }
