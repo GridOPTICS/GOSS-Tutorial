@@ -1,31 +1,58 @@
-package pnnl.goss.tutorial;
+package pnnl.goss.tutorial.common;
 
 
 
 public interface PMUAggregator {
 
-	/**
-	 * starts the calculation of phase angle difference between PMU data coming from two topics
-	 * TODO  Figure out the expected PMU data format, probably something like (datetime, sensor?, #, #, #)
-	 * 
-	 * @param topic1
-	 * @param topic2
-	 * @param outputTopic
-	 */
-	public void startCalculatePhaseAngleDifference(String topic1, String topic2, String outputTopic);
-	
-	public String getPmu1Topic();
+    /**
+     * starts the calculation of phase angle difference between PMU data coming from two topics
+     * TODO  Figure out the expected PMU data format, probably something like (datetime, sensor?, #, #, #)
+     *
+     * @param topic1
+     * @param topic2
+     * @param outputTopic
+     */
+    public void startCalculatePhaseAngleDifference(String topic1, String topic2, String outputTopic);
 
-	public void setPmu1Topic(String pmu1Topic);
+    /**
+     * Retrieve the topic where pmu1 is being published.
+     * @return
+     */
+    public String getPmu1Topic();
 
-	public String getPmu2Topic();
+    /**
+     * Sets pmu1's topic
+     * @param pmu1Topic
+     */
+    public void setPmu1Topic(String pmu1Topic);
 
-	public void setPmu2Topic(String pmu2Topic);
+    /**
+     * Returns pmu2's topic
+     * @return
+     */
+    public String getPmu2Topic();
 
-	public String getOutputTopic();
+    /**
+     * Sets pmu2's topic
+     * @param pmu2Topic
+     */
+    public void setPmu2Topic(String pmu2Topic);
 
-	public void setOutputTopic(String outputTopic);
-	
-	public void stop();
-	
+    /**
+     * The topic where the aggregator should store the difference
+     * @return
+     */
+    public String getOutputTopic();
+
+    /**
+     * Sets the aggregator output topic.
+     * @param outputTopic
+     */
+    public void setOutputTopic(String outputTopic);
+
+    /**
+     * Stop calculating the aggregation.
+     */
+    public void stop();
+
 }
