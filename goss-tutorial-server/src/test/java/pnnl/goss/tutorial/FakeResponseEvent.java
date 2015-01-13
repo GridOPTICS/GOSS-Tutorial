@@ -7,7 +7,7 @@ import java.util.List;
 
 import pnnl.goss.core.DataResponse;
 import pnnl.goss.core.Response;
-import pnnl.goss.core.client.GossResponseEvent;
+import pnnl.goss.core.GossResponseEvent;
 
 class FakeResponseEvent implements GossResponseEvent{
 	private ArrayList<Long> arrivalTimes = new ArrayList<Long>();
