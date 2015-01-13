@@ -3,7 +3,7 @@ package pnnl.goss.tutorial.response;
 import java.io.Serializable;
 
 import pnnl.goss.core.Response;
-import pnnl.goss.core.client.GossResponseEvent;
+import pnnl.goss.core.GossResponseEvent;
 
 public class GossTutorialResponseEvent implements GossResponseEvent {
 
