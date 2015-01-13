@@ -11,9 +11,9 @@
     <properties>
         <activemqVersion>5.10.0</activemqVersion>
         <cxfVersion>2.7.13</cxfVersion>
-        <karafVersion>3.0.2</karafVersion>
-        <ipojoVersion>1.11.2</ipojoVersion>
-        <gossCoreVersion>0.1.8</gossCoreVersion>
+        <karafVersion>3.0.3-SNAPSHOT</karafVersion>
+        <gossCoreVersion>0.1.9-SNAPSHOT</gossCoreVersion>
+        <gossTutorialVersion>1.2-SNAPSHOT</gossTutorialVersion>
         <!-- <goss-fusiondb.version>0.1.5-SNAPSHOT</goss-fusiondb.version> <goss-kairosdb.version>0.1.4-SNAPSHOT</goss-kairosdb.version>
             <goss-gridmw.version>0.1.4-SNAPSHOT</goss-gridmw.version> <goss-tool-fncs.version>0.1.4-SNAPSHOT</goss-tool-fncs.version>
             <goss-tool-mdart.version>0.1.4-SNAPSHOT</goss-tool-mdart.version> <goss-powergrid.version>0.1.5-SNAPSHOT</goss-powergrid.version>
@@ -26,7 +26,8 @@
     <repositories>
         <repository>
             <id>apache-snapshot</id>
-            <url>https://repository.apache.org/content/groups/snapshots</url>
+            <url>http://repository.apache.org/snapshots</url>
+            <!-- <url>https://repository.apache.org/content/groups/snapshots</url> -->
             <snapshots>
                 <enabled>true</enabled>
             </snapshots>
@@ -99,10 +100,10 @@
                                 <descriptor>mvn:org.apache.karaf.features/standard/${karafVersion}/xml/features</descriptor>
                                 <descriptor>mvn:org.apache.karaf.features/enterprise/${karafVersion}/xml/features</descriptor>
                                 <descriptor>mvn:org.apache.karaf.features/spring/${karafVersion/xml/features</descriptor>
-                                <descriptor>http://repo1.maven.org/maven2/org/apache/felix/org.apache.felix.ipojo.features/${ipojoVersion}/org.apache.felix.ipojo.features-${ipojoVersion}.xml</descriptor>
                                 <descriptor>mvn:org.apache.activemq/activemq-karaf/${activemqVersion}/xml/features</descriptor>
                                 <descriptor>mvn:org.apache.cxf.karaf/apache-cxf/${cxfVersion}/xml/features</descriptor>
-                                <descriptor>mvn:pnnl.goss/goss-feature/${gossCoreVersion}/xml/features</descriptor>
+                                <descriptor>mvn:pnnl.goss/goss-core-feature/${gossCoreVersion}/xml/features</descriptor>
+                                <descriptor>mvn:pnnl.goss.tutorial/goss-tutorial-feature/${gossTutorialVersion}/xml/features</descriptor>
                             </descriptors>
                         </configuration>
                     </execution>
@@ -289,8 +290,16 @@
         </dependency>
         <dependency>
             <groupId>pnnl.goss</groupId>
-            <artifactId>goss-feature</artifactId>
+            <artifactId>goss-core-feature</artifactId>
             <version>${gossCoreVersion}</version>
+            <type>xml</type>
+            <scope>runtime</scope>
+            <classifier>features</classifier>
+        </dependency>
+        <dependency>
+            <groupId>pnnl.goss.tutorial</groupId>
+            <artifactId>goss-tutorial-feature</artifactId>
+            <version>${gossTutorialVersion}</version>
             <type>xml</type>
             <scope>runtime</scope>
             <classifier>features</classifier>

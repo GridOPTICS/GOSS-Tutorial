@@ -2,19 +2,20 @@ dependencies {
     compile project(':goss-tutorial-common')
     compile "pnnl.goss:goss-core-server:${gossCoreVersion}"
     compile "pnnl.goss:goss-core-client:${gossCoreVersion}"
+    compile "pnnl.goss:goss-core:${gossCoreVersion}"
     compile "com.google.code.gson:gson:${gsonVersion}"
     compile "net.sf.py4j:py4j:${py4jVersion}"
 }
 
 jar{
     manifest {
+
         instruction 'Export-Package', 	'pnnl.goss.tutorial.datamodel',
                             'pnnl.goss.tutorial.request',
                             'pnnl.goss.tutorial.response',
                             'pnnl.goss.tutorial'
+        instruction "Bundle-Activator", 'pnnl.goss.tutorial.TutorialActivator'
+		
+
     }
-
-    [compileJava, compileTestJava, javadoc]*.options*.encoding = 'UTF-8'
-
-    apply plugin: 'pnnl.goss.ipojoize'
 }
