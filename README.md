@@ -5,9 +5,9 @@ Updated 1/14/2015
 For the following instructions $ROOT will be ~/git in linux, %USERPROFILE%\git on windows.  For the rest of the tutorial / will be used as the default path separator.  This tutorial assumes that $ROOT exists.  The [] brackets are used when a file extension is necessary for windows .bat files.
 
 Requirement:
-1. Git (http://git-scm.com/download)
-2. Maven 3.0.5 (http://maven.apache.org/docs/3.0.5/release-notes.html)
-3. JDK 1.7 (http://www.oracle.com/technetwork/java/javase/downloads/jdk7-downloads-1880260.html)
+* Git (http://git-scm.com/download)
+* Maven 3.0.5 (http://maven.apache.org/docs/3.0.5/release-notes.html)
+* JDK 1.7 (http://www.oracle.com/technetwork/java/javase/downloads/jdk7-downloads-1880260.html)
 
 Steps:
 1. Open a Terminal (cmd) window and change the working directory to $ROOT
