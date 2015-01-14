@@ -25,14 +25,14 @@ public class GeneratorLauncher implements GossResponseEvent, Runnable {
     private static Logger log = LoggerFactory.getLogger(GeneratorLauncher.class);
     private volatile Client client;
     private volatile boolean running = false;
-    private PMUGenerator generator1;
-    private PMUGenerator generator2;
+    private volatile PMUGenerator generator1;
+    private volatile PMUGenerator generator2;
 
     public GeneratorLauncher(Client client){
         log.debug("Constructing with client!");
         if (client == null) throw new IllegalArgumentException("Invalid client speecified!");
         this.client = client;
-        this.generator1 = new PMUGeneratorImpl(this.client);
+        this.generator1 = new PMUGeneratorImpl(client);
         this.generator2 = new PMUGeneratorImpl(client);
     }
 
@@ -68,8 +68,9 @@ public class GeneratorLauncher implements GossResponseEvent, Runnable {
         if (client == null){
             throw new NullPointerException();
         }
-        setupControlChannel();
+
         createGenerators();
+        setupControlChannel();
     }
 
     public void stopLauncher(){

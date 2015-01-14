@@ -19,7 +19,7 @@ public class AggregatorLauncher extends Thread implements GossResponseEvent{
     private static Logger log = LoggerFactory.getLogger(AggregatorLauncher.class);
 
     private PMUAggregator aggregator; // = new PMUAggregatorImpl(client);
-    private Client client = null;
+    private volatile Client client = null;
     private boolean running = false;
 
     public AggregatorLauncher(Client client){
@@ -27,8 +27,8 @@ public class AggregatorLauncher extends Thread implements GossResponseEvent{
             throw new IllegalArgumentException("Client cannot be null!");
         }
         this.client = client;
+        aggregator = new PMUAggregatorImpl(client);
     }
-
 
     public void startLauncher(){
         log.debug("Starting Aggregator Launcher");
@@ -43,8 +43,8 @@ public class AggregatorLauncher extends Thread implements GossResponseEvent{
     @Override
     public void run() {
         log.debug("Creating aggregator launcher");
-        setupControlChannel();
         startAggregator();
+        setupControlChannel();
     }
 
 
