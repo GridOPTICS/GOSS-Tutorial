@@ -43,7 +43,6 @@ public class AggregatorLauncher extends Thread implements GossResponseEvent{
     @Override
     public void run() {
         log.debug("Creating aggregator launcher");
-        startAggregator();
         setupControlChannel();
     }
 
@@ -51,8 +50,8 @@ public class AggregatorLauncher extends Thread implements GossResponseEvent{
     private void startAggregator() {
         String pmu1Id = "PMU_1";
         String pmu2Id = "PMU_2";
-        String pmu1Topic = "/topic/goss/tutorial/pmu/PMU_1";
-        String pmu2Topic = "/topic/goss/tutorial/pmu/PMU_2";
+        String pmu1Topic = "goss/tutorial/pmu/PMU_1";
+        String pmu2Topic = "goss/tutorial/pmu/PMU_2";
         String outputTopic = "pmu/"+pmu1Id+"/"+pmu2Id+"/agg";
         aggregator.startCalculatePhaseAngleDifference(pmu1Topic, pmu2Topic, outputTopic);
     }
@@ -64,7 +63,7 @@ public class AggregatorLauncher extends Thread implements GossResponseEvent{
     private void setupControlChannel() {
         log.debug("Setting up Control Channel");
 
-        client.subscribeTo("/topic/goss/tutorial/control", this);
+        client.subscribeTo("goss/tutorial/control", this);
 
     }
 

@@ -59,7 +59,7 @@ public class GeneratorLauncher implements GossResponseEvent, Runnable {
     private void setupControlChannel() {
         log.debug("Setting up Control Channel");
 
-        client.subscribeTo("/topic/goss/tutorial/control", this);
+        client.subscribeTo("goss/tutorial/control", this);
 
     }
 
