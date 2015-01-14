@@ -33,7 +33,7 @@ public class TutorialActivator implements BundleActivator {
 
         ClientFactory factory = (ClientFactory) factoryTracker.getService();
 
-        generationLauncher = new GeneratorLauncher(factory.create(PROTOCOL.OPENWIRE));
+        generationLauncher = new GeneratorLauncher(factory.create(PROTOCOL.STOMP));
         generationLauncher.startLauncher();
 
         aggregationLauncher = new AggregatorLauncher(factory.create(PROTOCOL.STOMP));
