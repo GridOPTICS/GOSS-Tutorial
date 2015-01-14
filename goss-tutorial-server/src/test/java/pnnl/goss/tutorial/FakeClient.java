@@ -126,13 +126,19 @@ public class FakeClient implements Client {
     }
 
     @Override
-    public void setProtocol(PROTOCOL protocol) {
+    public PROTOCOL getProtocol() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public void reset() {
         // TODO Auto-generated method stub
 
     }
 
     @Override
-    public PROTOCOL getProtocol() {
+    public String getClientId() {
         // TODO Auto-generated method stub
         return null;
     }

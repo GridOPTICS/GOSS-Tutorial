@@ -27,8 +27,6 @@ public class AggregatorLauncher extends Thread implements GossResponseEvent{
             throw new IllegalArgumentException("Client cannot be null!");
         }
         this.client = client;
-        this.client.setProtocol(PROTOCOL.STOMP);
-
     }
 
 
