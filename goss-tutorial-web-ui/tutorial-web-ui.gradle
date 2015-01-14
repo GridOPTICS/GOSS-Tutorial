@@ -1,6 +1,6 @@
 dependencies {
-    //compile 'org.apache.felix:org.apache.felix.http.servlet-api:1.0.1'
-    //compile 'org.apache.felix:org.apache.felix.http.api:2.3.2'
+    compile 'org.apache.felix:org.apache.felix.http.servlet-api:1.0.1'
+    compile 'org.apache.felix:org.apache.felix.http.api:2.3.2'
     compile project(':goss-tutorial-common')
     compile "pnnl.goss:goss-core-server:${gossCoreVersion}"
     compile "pnnl.goss:goss-core-client:${gossCoreVersion}"
