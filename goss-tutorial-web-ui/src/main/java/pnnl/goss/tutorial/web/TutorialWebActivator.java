@@ -1,9 +1,5 @@
 package pnnl.goss.tutorial.web;
 
-//import java.util.Dictionary;
-//import java.util.Hashtable;
-//
-//import javax.servlet.Servlet;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
