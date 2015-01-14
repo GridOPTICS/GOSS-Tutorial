@@ -10,23 +10,26 @@ Requirement:
 * JDK 1.7 (http://www.oracle.com/technetwork/java/javase/downloads/jdk7-downloads-1880260.html)
 
 Steps:
+
 1. Open a Terminal (cmd) window and change the working directory to $ROOT
 	* git clone https://github.com/GridOPTICS/GOSS-Tutorial.git
 
-4. Build GOSS-Tutorial
+2. Build GOSS-Tutorial
 	* cd ../GOSS-Tutorial
 	* gradlew install
 	* mvn clean install
 	
-5. Start Karaf
+3. Start Karaf
 	* cd ../GOSS-Tutorial
 	* ./start-karaf[.bat]
 	
-6. Register GOSS Tutorial in Karaf
+4. Register GOSS Tutorial in Karaf
 	* feature:install goss-tutorial-feature 
 
-7. Open browser to http://localhost:8181/tutorial/index.html
-8. Click 'Start PMU Stream'
-9. Click 'Start Aggregator'
+5. Open browser to http://localhost:8181/tutorial/index.html
+
+6. Click 'Start PMU Stream'
+
+7. Click 'Start Aggregator'
  
 
