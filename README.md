@@ -17,11 +17,10 @@ Steps:
 2. Build GOSS-Tutorial
 	* cd ../GOSS-Tutorial
 	* gradlew install
-	* mvn clean install
+	* mvn clean compile
 	
 3. Start Karaf
-	* cd ../GOSS-Tutorial
-	* ./start-karaf[.bat]
+	* ./start-karaf(linux)   or  start-karaf.bat(windows)
 	
 4. Register GOSS Tutorial in Karaf
 	* feature:install goss-tutorial-feature 
