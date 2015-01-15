@@ -102,28 +102,28 @@ public class PMUAggregatorImpl implements PMUAggregator{
                     @Override
                     public void onMessage(Serializable response) {
                         if(isRunning){
-                        String responseStr = ((DataResponse)response).getData().toString();
-                        String args[] = responseStr.split(",");
-                        Date date = null;
-                        Double dblValue = null;
-                        try {
-                            SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
-                            date = DATE_FORMAT.parse(args[0].trim());
-                            dblValue = Double.parseDouble(args[1].trim());
-                            topic2Values.put(date, dblValue);
-                        } catch (ParseException e) {
-                            System.err.println("Could not parse date "+args[0].trim());
-                            e.printStackTrace();
-                        } catch (Exception e) {
-                            System.err.println("Exception in pmu 2 stream");
-                            e.printStackTrace();
-                        }
+                            String responseStr = ((DataResponse)response).getData().toString();
+                            String args[] = responseStr.split(",");
+                            Date date = null;
+                            Double dblValue = null;
+                            try {
+                                SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+                                date = DATE_FORMAT.parse(args[0].trim());
+                                dblValue = Double.parseDouble(args[1].trim());
+                                topic2Values.put(date, dblValue);
+                            } catch (ParseException e) {
+                                System.err.println("Could not parse date "+args[0].trim());
+                                e.printStackTrace();
+                            } catch (Exception e) {
+                                System.err.println("Exception in pmu 2 stream");
+                                e.printStackTrace();
+                            }
 
-                        if (date != null && topic1Values.containsKey(date)){
-                            publishDifference(date, topic1Values.get(date), dblValue);
-                            topic1Values.remove(date);
-                            topic2Values.remove(date);
-                        }
+                            if (date != null && topic1Values.containsKey(date)){
+                                publishDifference(date, topic1Values.get(date), dblValue);
+                                topic1Values.remove(date);
+                                topic2Values.remove(date);
+                            }
                         }
                     }
                 };

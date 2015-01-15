@@ -10,7 +10,7 @@ import org.slf4j.LoggerFactory;
 import pnnl.goss.core.Client;
 import pnnl.goss.tutorial.common.PMUGenerator;
 
-public class PMUGeneratorImpl implements PMUGenerator{
+public class PMUGeneratorImpl implements PMUGenerator {
     private static Logger log = LoggerFactory.getLogger(PMUGeneratorImpl.class);
 
     private List<String> data;
@@ -28,7 +28,6 @@ public class PMUGeneratorImpl implements PMUGenerator{
     }
 
     public PMUGeneratorImpl(Client client){
-
         if (client == null) {
             log.debug("Null client passed!");
             throw new IllegalArgumentException("Invalid client speecified!");
@@ -38,11 +37,15 @@ public class PMUGeneratorImpl implements PMUGenerator{
     }
 
     public PMUGeneratorImpl(Client client, List<String> data){
+        if (client == null) {
+            log.debug("Null client passed!");
+            throw new IllegalArgumentException("Invalid client speecified!");
+        }
         this.client = client;
         this.data = data;
     }
 
-    private synchronized void publishNext(){
+    private void publishNext(){
         String item = queue.poll();
 
         log.debug("publishing next: "+outputTopic+" " + item);
@@ -87,6 +90,8 @@ public class PMUGeneratorImpl implements PMUGenerator{
                     }
 
                 }
+
+                log.debug("Thread exiting!");
             }
         };
 
