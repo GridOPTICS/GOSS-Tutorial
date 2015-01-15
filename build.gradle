@@ -134,6 +134,21 @@ subprojects {
             testCompile "org.spockframework:spock-core:${spockVersion}"
 
         }
+
+        // specify where source files can be located forthe projects.
+        sourceSets {
+            main {
+                // override the default locations, rather than adding additional ones
+                groovy { srcDirs = ['src/main/groovy', 'src/main/java'] }
+                // don't compile Java code twice (groovy will compile java files)
+                java { srcDirs = [] }
+            }
+
+            test {
+                groovy { srcDirs = ['src/test/java', 'src/test/groovy'] }
+                java { srcDirs = [] }
+            }
+        }
     }
 }
 
