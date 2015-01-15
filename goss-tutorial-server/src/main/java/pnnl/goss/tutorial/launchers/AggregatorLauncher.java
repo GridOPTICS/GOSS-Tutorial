@@ -14,13 +14,15 @@ import pnnl.goss.core.Client.PROTOCOL;
 import pnnl.goss.core.server.GossRequestHandlerRegistrationService;
 import pnnl.goss.tutorial.common.PMUAggregator;
 import pnnl.goss.tutorial.impl.PMUAggregatorImpl;
+import static pnnl.goss.tutorial.impl.PMUConstants.*;
 
-public class AggregatorLauncher extends Thread implements GossResponseEvent{
+public class AggregatorLauncher implements GossResponseEvent{
     private static Logger log = LoggerFactory.getLogger(AggregatorLauncher.class);
 
     private PMUAggregator aggregator; // = new PMUAggregatorImpl(client);
-    private volatile Client client = null;
-    private boolean running = false;
+    private Client client = null;
+    private volatile boolean running = false;
+    private volatile boolean enabled = false;
 
     public AggregatorLauncher(Client client){
         if (client == null){
@@ -32,28 +34,37 @@ public class AggregatorLauncher extends Thread implements GossResponseEvent{
 
     public void startLauncher(){
         log.debug("Starting Aggregator Launcher");
-        new Thread(this).start();
+
+        if (!enabled){
+            enabled = true;
+            log.debug("Enabling control channel");
+            Thread thread = new Thread(new Runnable() {
+
+                @Override
+                public void run() {
+                    setupControlChannel();
+                    log.debug("Thread exiting: closing client now!");
+                    // Close the client here.
+                    client.close();
+                }
+            });
+
+            thread.start();
+        }
     }
 
     public void stopLauncher(){
         log.debug("Stopping Aggregator Launcher");
         stopAggregator();
-    }
-
-    @Override
-    public void run() {
-        log.debug("Creating aggregator launcher");
-        setupControlChannel();
+        enabled = false;
+        running = false;
+        client.close();
     }
 
 
     private void startAggregator() {
-        String pmu1Id = "PMU_1";
-        String pmu2Id = "PMU_2";
-        String pmu1Topic = "goss/tutorial/pmu/PMU_1";
-        String pmu2Topic = "goss/tutorial/pmu/PMU_2";
-        String outputTopic = "pmu/"+pmu1Id+"/"+pmu2Id+"/agg";
-        aggregator.startCalculatePhaseAngleDifference(pmu1Topic, pmu2Topic, outputTopic);
+        aggregator.startCalculatePhaseAngleDifference(PMU_1_TOPIC,
+                PMU_2_TOPIC, PMU_AGGREGATION_TOPIC);
     }
 
     private void stopAggregator(){
@@ -63,13 +74,14 @@ public class AggregatorLauncher extends Thread implements GossResponseEvent{
     private void setupControlChannel() {
         log.debug("Setting up Control Channel");
 
-        client.subscribeTo("goss/tutorial/control", this);
+        client.subscribeTo("/topic/goss/tutorial/control", this);
 
     }
 
 
     @Override
-    public void onMessage(Serializable response) {
+    public synchronized void onMessage(Serializable response) {
+
         String message = (String)((DataResponse)response).getData();
         log.debug("Aggregator got message "+message);
         if(message.contains("start agg") && running==false){

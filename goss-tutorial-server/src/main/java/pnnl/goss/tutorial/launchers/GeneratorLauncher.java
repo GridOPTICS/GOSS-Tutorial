@@ -19,21 +19,25 @@ import pnnl.goss.core.DataResponse;
 import pnnl.goss.core.GossResponseEvent;
 import pnnl.goss.tutorial.common.PMUGenerator;
 import pnnl.goss.tutorial.impl.PMUGeneratorImpl;
+import static pnnl.goss.tutorial.impl.PMUConstants.*;
 
-public class GeneratorLauncher implements GossResponseEvent, Runnable {
+public class GeneratorLauncher implements GossResponseEvent {
 
     private static Logger log = LoggerFactory.getLogger(GeneratorLauncher.class);
     private volatile Client client;
     private volatile boolean running = false;
-    private volatile PMUGenerator generator1;
-    private volatile PMUGenerator generator2;
+    private volatile boolean enabled = false;
+    private PMUGenerator generator1;
+    private PMUGenerator generator2;
+    private Runnable runnable = null;
 
-    public GeneratorLauncher(Client client){
+    public GeneratorLauncher(Client client) {
         log.debug("Constructing with client!");
         if (client == null) throw new IllegalArgumentException("Invalid client speecified!");
         this.client = client;
         this.generator1 = new PMUGeneratorImpl(client);
         this.generator2 = new PMUGeneratorImpl(client);
+        createGenerators();
     }
 
     @Override
@@ -59,22 +63,20 @@ public class GeneratorLauncher implements GossResponseEvent, Runnable {
     private void setupControlChannel() {
         log.debug("Setting up Control Channel");
 
-        client.subscribeTo("goss/tutorial/control", this);
+        client.subscribeTo("/topic/goss/tutorial/control", this);
 
-    }
-
-    @Override
-    public void run() {
-        if (client == null){
-            throw new NullPointerException();
-        }
-
-        createGenerators();
-        setupControlChannel();
     }
 
     public void stopLauncher(){
+        if (enabled) {
+            client.close();
+        }
+        generator1.stop();
+        generator2.stop();
         running = false;
+        enabled = false;
+
+        log.debug("Stopping launcher");
     }
 
 
@@ -84,19 +86,32 @@ public class GeneratorLauncher implements GossResponseEvent, Runnable {
         if (client == null){
             throw new NullPointerException("Specify client object");
         }
-        new Thread(this).start();
+
+        if (!enabled){
+            enabled = true;
+            log.debug("Enabling control channel");
+            runnable = new Runnable() {
+
+                @Override
+                public void run() {
+                    setupControlChannel();
+                    log.debug("Thread exiting: closing client now!");
+                    // Close the client here.
+                    client.close();
+                }
+            };
+
+            new Thread(runnable).start();
+        }
     }
 
     private void startGenerating() {
-        String pmu1Id = "PMU_1";
-        String pmu2Id = "PMU_2";
-        String pmu1Topic = "goss/tutorial/pmu/PMU_1";
-        String pmu2Topic = "goss/tutorial/pmu/PMU_2";
-        int itemsPerInterval = 2;
-        double intervalSeconds = 1;
         log.debug("Starting generation");
-        generator1.start(pmu1Id, pmu1Topic, itemsPerInterval, intervalSeconds);
-        generator2.start(pmu2Id, pmu2Topic, itemsPerInterval, intervalSeconds);
+
+        generator1.start(PMU_1_NAME, PMU_1_TOPIC, PUBLISH_PMU_PER_INTERVAL,
+                PUBLISH_INTERVAL_SECONDS);
+        generator2.start(PMU_2_NAME, PMU_2_TOPIC, PUBLISH_PMU_PER_INTERVAL,
+                PUBLISH_INTERVAL_SECONDS);
     }
 
     private void stopGenerating() {
