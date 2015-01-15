@@ -24,11 +24,8 @@ public class TutorialActivator implements BundleActivator {
     @Override
     public void start(BundleContext context) throws Exception {
         log.debug("Bundle starting!");
-        String filterString = "(" + Constants.OBJECTCLASS +
-                "="+ ClientFactory.class.getName() + ")";
 
-        Filter filter = context.createFilter(filterString);
-        factoryTracker = new ServiceTracker(context, filter, null);
+        factoryTracker = new ServiceTracker(context, ClientFactory.class.getName(), null);
         factoryTracker.open();
 
         ClientFactory factory = (ClientFactory) factoryTracker.getService();
@@ -49,9 +46,10 @@ public class TutorialActivator implements BundleActivator {
     public void stop(BundleContext context) throws Exception {
         log.debug("Bundle stopping!");
         generationLauncher.stopLauncher();
-//        aggregationLauncher.stopLauncher();
+        aggregationLauncher.stopLauncher();
         factoryTracker.close();
         generationLauncher = null;
+        aggregationLauncher = null;
 
     }
 
