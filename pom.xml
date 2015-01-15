@@ -113,7 +113,24 @@
                     <bootFeatures>
                         <feature>standard</feature>
                         <feature>management</feature>
+                        <!-- <feature>activemq</feature> -->
+                        <feature>activemq-broker</feature>
+                        <feature>activemq-web-console</feature>
+                        <!-- feature>goss-activemq-broker-nosecurity</feature> -->
                     </bootFeatures>
+                    <installedFeatures>
+                        <!-- <feature>activemq</feature> -->
+                        <feature>activemq-web-console</feature>
+                        <feature>activemq-broker</feature>
+                        <!-- <feature>goss-activemq-broker-nosecurity</feature> -->
+                    </installedFeatures>
+                    <!--
+                    <installedFeatures>
+                        <feature>wrapper</feature>
+                        <feature>http</feature>
+                        <feature>activemq</feature>
+                        <feature>activemq-web-console</feature>
+                    </installedFeatures>-->
                     <!-- no installedFeatures -->
                       <!-- <installedFeatures>
                           <feature>goss-core-feature</feature>
@@ -289,6 +306,14 @@
             <scope>runtime</scope>
         </dependency>
         <dependency>
+            <groupId>org.apache.activemq</groupId>
+            <artifactId>activemq-karaf</artifactId>
+            <version>${activemqVersion}</version>
+            <scope>runtime</scope>
+            <classifier>features</classifier>
+            <type>xml</type>
+        </dependency>
+        <dependency>
             <groupId>pnnl.goss</groupId>
             <artifactId>goss-core-feature</artifactId>
             <version>${gossCoreVersion}</version>
@@ -304,6 +329,7 @@
             <scope>runtime</scope>
             <classifier>features</classifier>
         </dependency>
+
     </dependencies>
 <!--
     <dependencies>
