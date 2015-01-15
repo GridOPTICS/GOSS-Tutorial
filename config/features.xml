@@ -3,8 +3,9 @@
 
     <feature name="goss-tutorial-feature" version="@project.version@" resolver="(obr)">
         <feature version="@gossCoreVersion@">goss-core-feature</feature>
+        <feature>http</feature>
 
-		<bundle start-level="94" dependency="true">mvn:org.ops4j.pax.web/pax-web-extender-whiteboard/4.0.1</bundle>
+        <bundle start-level="94" dependency="true">mvn:org.ops4j.pax.web/pax-web-extender-whiteboard/4.0.1</bundle>
 
         <bundle start-level="95" dependency="true">mvn:pnnl.goss.tutorial/goss-tutorial-common/@project.version@</bundle>
         <bundle start-level="96" dependency="true">mvn:pnnl.goss.tutorial/goss-tutorial-server/@project.version@</bundle>
