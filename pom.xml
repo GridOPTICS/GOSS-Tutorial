@@ -12,7 +12,7 @@
         <activemqVersion>5.10.0</activemqVersion>
         <cxfVersion>2.7.13</cxfVersion>
         <karafVersion>3.0.3-SNAPSHOT</karafVersion>
-        <gossCoreVersion>0.1.9-SNAPSHOT</gossCoreVersion>
+        <gossCoreVersion>0.1.9</gossCoreVersion>
         <gossTutorialVersion>1.2-SNAPSHOT</gossTutorialVersion>
         <!-- <goss-fusiondb.version>0.1.5-SNAPSHOT</goss-fusiondb.version> <goss-kairosdb.version>0.1.4-SNAPSHOT</goss-kairosdb.version>
             <goss-gridmw.version>0.1.4-SNAPSHOT</goss-gridmw.version> <goss-tool-fncs.version>0.1.4-SNAPSHOT</goss-tool-fncs.version>
